@@ -2,7 +2,7 @@
   "name": "simple-check-replace",
   "displayName": "simple-check-replace",
   "description": "VS Code extension simple-check-replace",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -14,8 +14,15 @@
   "contributes": {
     "commands": [
       {
-        "command": "simple-check-replace.helloWorld",
+        "command": "extension.compareWithClipboard",
         "title": "Hello World"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.compareWithClipboard",
+        "key": "ctrl+alt+k",
+        "when": "editorTextFocus"
       }
     ]
   },
