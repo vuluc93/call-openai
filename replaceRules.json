@@ -1,0 +1,4 @@
+[
+  { "from": "const {0} = async {1} => {", "to": "async function {0}{1} {" },
+  { "from": "const {0} = {1} => {", "to": "function {0}{1} {" }
+]

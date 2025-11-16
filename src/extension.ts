@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import OpenAI from "openai";
+import { replaceByRules } from './features/replaceByRules';
 
 const SECRET_KEY_NAME = 'openai.apiKey';
 
@@ -86,6 +87,14 @@ export async  function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposableSetKey, disposable);
+	register(context, "extension.replaceByRules", replaceByRules);
 }
 
 export function deactivate() {}
+
+
+function register(ctx: vscode.ExtensionContext,
+    cmd: string,
+    fn: (...args: unknown[]) => unknown) {
+    ctx.subscriptions.push(vscode.commands.registerCommand(cmd, fn));
+}
