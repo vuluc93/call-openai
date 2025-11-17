@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import OpenAI from "openai";
 import { getSecret } from '../secretManager';
-
+import { fetchWithTimer } from '../utils';
 
 export async function shortAnswer() {
   const editor = vscode.window.activeTextEditor;
@@ -14,11 +14,13 @@ export async function shortAnswer() {
   const selection = editor.selection;
   const source = editor.document.getText(selection);
   if (question) {
-    if (source) {
-      await answerWithCode(source, question);
-    } else {
-      await answer(question);
-    }
+    await fetchWithTimer(async () => {
+      if (source) {
+        await answerWithCode(source, question);
+      } else {
+        await answer(question);
+      }
+    });
   }
 }
 

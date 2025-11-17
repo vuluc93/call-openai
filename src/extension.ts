@@ -7,7 +7,7 @@ import { shortAnswer } from './features/shortAnswer';
 
 const SECRET_KEY_NAME = 'openai.apiKey';
 
-export async  function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 	console.log('OpenAI example extension active');
 	initSecrets(context.secrets);
 
@@ -99,6 +99,13 @@ export async  function activate(context: vscode.ExtensionContext) {
 export function deactivate() {}
 
 
+/**
+ * Registers a new VSCode command and adds it to the extension context's subscriptions.
+ *
+ * @param ctx - The extension context provided on activation.
+ * @param cmd - The command identifier (string).
+ * @param fn - The callback function to execute when the command is invoked.
+ */
 function register(ctx: vscode.ExtensionContext,
     cmd: string,
     fn: (...args: unknown[]) => unknown) {
