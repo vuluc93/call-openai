@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.1.0",
+  "version": "0.2.3",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -24,17 +24,35 @@
       {
         "command": "extension.replaceByRules",
         "title": "Replace by rules"
+      },
+      {
+        "command": "extension.fixWithOpenAI",
+        "title": "Fix with OpenAI"
+      },
+      {
+        "command": "extension.shortAnswer",
+        "title": "Short answer with OpenAI"
       }
     ],
     "keybindings": [
       {
         "command": "extension.callOpenai",
-        "key": "ctrl+alt+/",
+        "key": "ctrl+alt+,",
         "when": "editorTextFocus"
       },
       {
         "command": "extension.replaceByRules",
         "key": "ctrl+alt+\\",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.fixWithOpenAI",
+        "key": "ctrl+alt+'",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.shortAnswer",
+        "key": "ctrl+alt+=",
         "when": "editorTextFocus"
       }
     ]

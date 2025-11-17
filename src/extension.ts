@@ -1,11 +1,15 @@
 import * as vscode from 'vscode';
 import OpenAI from "openai";
+import { initSecrets } from './secretManager';
 import { replaceByRules } from './features/replaceByRules';
+import { fixWithOpenAI } from './features/fixWithOpenAI';
+import { shortAnswer } from './features/shortAnswer';
 
 const SECRET_KEY_NAME = 'openai.apiKey';
 
 export async  function activate(context: vscode.ExtensionContext) {
 	console.log('OpenAI example extension active');
+	initSecrets(context.secrets);
 
   	const disposableSetKey = vscode.commands.registerCommand('extension.setOpenAIKey', async () => {
     const key = await vscode.window.showInputBox({
@@ -88,6 +92,8 @@ export async  function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposableSetKey, disposable);
 	register(context, "extension.replaceByRules", replaceByRules);
+ 	register(context, "extension.fixWithOpenAI", fixWithOpenAI);
+  	register(context, "extension.shortAnswer", shortAnswer);
 }
 
 export function deactivate() {}
