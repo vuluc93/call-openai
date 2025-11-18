@@ -19,7 +19,7 @@ while ($true) {
     $currentVersion = Get-Version
 
     if ($currentVersion -ne $lastVersion) {
-        Write-Host "Version changed: $lastVersion → $currentVersion" -ForegroundColor Green
+        Write-Host "Version changed: $lastVersion -> $currentVersion" -ForegroundColor Green
 
         # build
         vsce package --allow-missing-repository

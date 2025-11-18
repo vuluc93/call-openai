@@ -21,9 +21,8 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
         const response = await client.responses.create({
             model: "gpt-4.1",
             input: prompt,
-            max_output_tokens: 250,
+            max_output_tokens: 350,
         });
-
 
         await fn(response.output_text ?? '{}');
         // return result;
