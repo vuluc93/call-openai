@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -36,6 +36,14 @@
       {
         "command": "extension.listFunction",
         "title": "Show list functions"
+      },
+      {
+        "command": "extension.searchInFunctions",
+        "title": "Search in Functions (Selected Text)"
+      },
+      {
+        "command": "extension.jumpNextLine",
+        "title": "Jump Next Search Result"
       }
     ],
     "keybindings": [
@@ -62,6 +70,16 @@
       {
         "command": "extension.listFunction",
         "key": "ctrl+alt+g",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.searchInFunctions",
+        "key": "ctrl+alt+/",
+        "when": "true"
+      },
+      {
+        "command": "extension.jumpNextLine",
+        "key": "ctrl+alt+.",
         "when": "editorTextFocus"
       }
     ]

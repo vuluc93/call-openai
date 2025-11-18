@@ -1,10 +1,9 @@
 import * as vscode from 'vscode';
-import OpenAI from "openai";
 import { initSecrets } from './secretManager';
 import { replaceByRules } from './features/replaceByRules';
 import { fixWithOpenAI } from './features/fixWithOpenAI';
 import { shortAnswer } from './features/shortAnswer';
-import { extractTSFunctions } from './features/listFunctions';
+import { extractTSFunctions, searchInFunctions, jumpNextLine } from './features/listFunctions';
 
 const SECRET_KEY_NAME = 'openai.apiKey';
 
@@ -33,6 +32,8 @@ export async function activate(context: vscode.ExtensionContext) {
  	register(context, "extension.fixWithOpenAI", fixWithOpenAI);
   	register(context, "extension.shortAnswer", shortAnswer);
    	register(context, "extension.listFunction", showListFunction);
+    register(context, "extension.searchInFunctions", searchInFunctions);
+    register(context, "extension.jumpNextLine", jumpNextLine);
 }
 
 export function deactivate() {}
@@ -71,9 +72,10 @@ export async function showListFunction() {
 
 	const output = vscode.window.createOutputChannel("ListFunctions");
 	output.clear();
-	output.appendLine(`${textToProcess}`);
 	output.show(true);
+	let index = 1;
 	for (const func of listFuncs) {
-		output.appendLine(`${func.name}`);
+		output.appendLine(`${index}. ${func.name}`);
+		index++;
 	}
 }

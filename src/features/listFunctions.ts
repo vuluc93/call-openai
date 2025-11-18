@@ -1,3 +1,5 @@
+import * as vscode from 'vscode';
+
 export interface TSFunctionInfo {
   name: string;
   code: string;
@@ -100,4 +102,114 @@ export function extractTSFunctions(content: string): TSFunctionInfo[] {
   }
 
   return functions;
+}
+
+let jumpLines: number[] = [];
+let currentIndex = 0;
+
+export async function searchInFunctions() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showErrorMessage('No active editor!');
+        return;
+    }
+
+    const doc = editor.document;
+    const selection = editor.selection;
+    let searchText = doc.getText(selection).trim();
+
+    if (!searchText) {
+        // lấy từ clipboard nếu không có text được bôi
+        try {
+            const clipboardText = await vscode.env.clipboard.readText();
+            if (clipboardText && clipboardText.trim().length > 0) {
+                searchText = clipboardText.trim();
+            } else {
+                vscode.window.showWarningMessage('Please select some text or copy text to clipboard.');
+                return;
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                vscode.window.showErrorMessage(`Error reading clipboard: ${err.message}`);
+            } else {
+                vscode.window.showErrorMessage('Error reading clipboard');
+            }
+            return;
+        }
+    }
+
+    const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
+        'vscode.executeDocumentSymbolProvider',
+        doc.uri
+    );
+    if (!symbols) {
+        vscode.window.showErrorMessage('Cannot retrieve symbols for search.');
+        return;
+    }
+
+    interface FuncInfo {
+        name: string;
+        range: vscode.Range;
+    }
+
+    function getFunctionsWithRange(symbols: vscode.DocumentSymbol[]): FuncInfo[] {
+        let funcs: FuncInfo[] = [];
+        for (const s of symbols) {
+            if (s.kind === vscode.SymbolKind.Method || s.kind === vscode.SymbolKind.Function) {
+                funcs.push({ name: s.name, range: s.range });
+            }
+            funcs.push(...getFunctionsWithRange(s.children));
+        }
+        return funcs;
+    }
+
+    const funcs = getFunctionsWithRange(symbols);
+    const textLines = doc.getText().split(/\r?\n/);
+
+    const output = vscode.window.createOutputChannel('Search in Functions');
+    output.clear();
+    output.appendLine(`Search "${searchText}" in ${doc.fileName}:`);
+
+    // Map function name -> array of {line number, text}
+    const funcMatches: Record<string, { lineNum: number; text: string }[]> = {};
+
+    jumpLines = []; // reset lưu jumpLines
+    currentIndex = 0;
+
+    for (let lineNum = 0; lineNum < textLines.length; lineNum++) {
+        const line = textLines[lineNum];
+        if (line.includes(searchText)) {
+            const pos = new vscode.Position(lineNum, 0);
+            const containingFunc = funcs.find(f => f.range.contains(pos));
+            const funcName = containingFunc ? containingFunc.name : '<global>';
+
+            if (!funcMatches[funcName]) {
+                funcMatches[funcName] = [];
+            }
+            funcMatches[funcName].push({ lineNum: lineNum + 1, text: line.trim() });
+
+            jumpLines.push(lineNum + 1); // lưu vào bộ nhớ cho nhảy vòng
+        }
+    }
+
+    for (const [funcName, lines] of Object.entries(funcMatches)) {
+        output.appendLine(`__________${funcName}__________`);
+        lines.forEach(l => output.appendLine(`${l.lineNum} - ${l.text}`));
+    }
+
+    output.show(true);
+
+    vscode.window.showInformationMessage(`Found ${jumpLines.length} matching lines.`);
+}
+
+export async function jumpNextLine() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || jumpLines.length === 0) { return; } 
+
+    const lineNum = jumpLines[currentIndex] - 1; // VSCode index từ 0
+    const range = new vscode.Range(lineNum, 0, lineNum, 0);
+    editor.selection = new vscode.Selection(range.start, range.end);
+    editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+
+    currentIndex = (currentIndex + 1) % jumpLines.length; // vòng lại đầu khi hết
 }
