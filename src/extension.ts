@@ -71,6 +71,7 @@ export async function showListFunction() {
 
 	const output = vscode.window.createOutputChannel("ListFunctions");
 	output.clear();
+	output.appendLine(`${textToProcess}`);
 	output.show(true);
 	for (const func of listFuncs) {
 		output.appendLine(`${func.name}`);
