@@ -14,13 +14,32 @@ export async function shortAnswer() {
   const selection = editor.selection;
   const source = editor.document.getText(selection);
   if (question) {
-    await fetchWithTimer(async () => {
-      if (source) {
-        await answerWithCode(source, question);
-      } else {
-        await answer(question);
-      }
-    });
+    // await fetchWithTimer(``async () => {
+    if (source) {
+      // await answerWithCode(source, question);
+    } else {
+      await fetchWithTimer(`
+          Trả lời siêu ngắn gọn trong 1 câu.
+          Câu hỏi: ${question}?
+        `, async (jsonString) => {
+        const output = vscode.window.createOutputChannel("ShortAnswer");
+        output.clear();
+        output.appendLine(`[__________Question__________]`);
+        output.appendLine(`${question}`);
+        output.appendLine(`[___________Answer___________]`);
+        output.appendLine(`${jsonString}`);
+        output.show(true);
+      });
+      // await answer(question);
+    }
+    // });
+    // await fetchWithTimer(async () => {
+    //   if (source) {
+    //     await answerWithCode(source, question);
+    //   } else {
+    //     await answer(question);
+    //   }
+    // });
   }
 }
 

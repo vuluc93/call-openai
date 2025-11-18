@@ -6,7 +6,7 @@ export async function replaceByRules() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) { return; }
 
-  const configPath = 'C:\\Users\\LucVH\\ProcessFiles\\replaceRules.json';
+  const configPath = String.raw`C:\Users\LucVH\ProcessFiles\replaceRules.json`;
   const output = vscode.window.createOutputChannel("ReplaceByRules");
   output.clear();
   output.appendLine(`ConfigPath:  ${configPath}`);

@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
+import OpenAI from "openai";
+import { getSecret } from './secretManager';
 
-export async function fetchWithTimer<T>(fn: () => Promise<T>) {
+export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => Promise<T>) {
     const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     status.show();
 
@@ -13,8 +15,21 @@ export async function fetchWithTimer<T>(fn: () => Promise<T>) {
     }, 1000);
 
     try {
-        const result = await fn();
-        return result;
+        const apiKey = await getSecret();
+        const client = new OpenAI({ apiKey });
+
+        const response = await client.responses.create({
+            model: "gpt-4.1",
+            input: prompt,
+            max_output_tokens: 250,
+        });
+
+
+        await fn(response.output_text ?? '{}');
+        // return result;
+    } catch (err: any) {
+        console.error('OpenAI call failed:', err);
+        vscode.window.showErrorMessage(`OpenAI error: ${err.message ?? String(err)}`);
     } finally {
         clearInterval(interval);
         status.dispose();
