@@ -58,11 +58,18 @@ export async function showListFunction() {
 		return;
 	}
 
-	const doc = editor.document;
-	const text = doc.getText();
-	const listFuncs = extractTSFunctions(text);
+	let textToProcess = "";
+    const selection = editor.selection;
+    const selectedText = editor.document.getText(selection);
 
-	const output = vscode.window.createOutputChannel("FixWithOpenAI");
+    if (selectedText && selectedText.trim() !== "") {
+        textToProcess = selectedText;
+    } else {
+        textToProcess = editor.document.getText();
+    }
+	const listFuncs = extractTSFunctions(textToProcess);
+
+	const output = vscode.window.createOutputChannel("ListFunctions");
 	output.clear();
 	output.show(true);
 	for (const func of listFuncs) {
