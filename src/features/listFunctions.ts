@@ -40,13 +40,45 @@ export function extractTSFunctions(content: string): TSFunctionInfo[] {
     let docLines = 0;
 
     let k = i - 1;
-    if (k >= 0 && lines[k].trim().startsWith("/**")) {
-      docStart = k;
-      while (k < i && !lines[k].includes("*/")) {
-        k++;
-      }
-      docEnd = k;
-      docLines = docEnd - docStart + 1;
+        // Quick ignore: if line above is empty and line above that isn't comment, assume no doc
+    if (k >= 0) {
+        // If the line just above looks like part of a block comment (ends with */ or starts with * or starts with /**),
+        // then attempt to scan upwards to find the /** start.
+        const looksLikeCommentLine = (ln: string) => {
+            const t = ln.trim();
+            return t.startsWith("/**") || t.startsWith("*") || t.endsWith("*/");
+        };
+
+        if (looksLikeCommentLine(lines[k])) {
+            // scan upwards to find the opening '/**'
+            let s = k;
+            while (s >= 0 && !lines[s].includes("/**")) {
+                // if encounter a line that's definitively not part of the comment, abort
+                const t = lines[s].trim();
+                if (!(t.startsWith("*") || t.endsWith("*/") || t === "")) {
+                    // not a comment line -> abort docstring detection
+                    s = -1;
+                    break;
+                }
+                s--;
+            }
+
+            if (s >= 0 && lines[s].includes("/**")) {
+                docStart = s;
+                // scan forward from docStart to find the '*/'
+                let d = docStart;
+                while (d < i && !lines[d].includes("*/")) {
+                    d++;
+                }
+                if (d < i && lines[d].includes("*/")) {
+                    docEnd = d;
+                } else {
+                    // unterminated comment before function: treat as no docstring
+                    docStart = -1;
+                    docEnd = -1;
+                }
+            }
+        }
     }
 
     // =====================================
