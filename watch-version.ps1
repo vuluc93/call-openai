@@ -1,3 +1,9 @@
+Write-Host "Pulling latest code..." -ForegroundColor Yellow
+
+git -c http.sslVerify=false pull
+
+Write-Host "Done pulling remote." -ForegroundColor Green
+
 $packagePath = "package.json"
 $versionFile = "last-version.txt"
 
