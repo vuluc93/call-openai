@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -44,6 +44,26 @@
       {
         "command": "extension.jumpNextLine",
         "title": "Jump Next Search Result"
+      },
+      {
+        "command": "extension.insertLoggerDebug",
+        "title": "Insert logger debug"
+      },
+      {
+        "command": "extension.pasteMultiTimes",
+        "title": "Paste multi-times"
+      },
+      {
+        "command": "extension.replaceLimited",
+        "title": "Replace limited"
+      },
+      {
+        "command": "extension.simpleCheckReplace",
+        "title": "Simple check replace"
+      },
+      {
+        "command": "extension.docstringAuto",
+        "title": "Docstring Auto"
       }
     ],
     "keybindings": [
@@ -80,6 +100,26 @@
       {
         "command": "extension.jumpNextLine",
         "key": "ctrl+alt+.",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.insertLoggerDebug",
+        "key": "ctrl+alt+d",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.pasteMultiTimes",
+        "key": "ctrl+alt+enter",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.replaceLimited",
+        "key": "ctrl+alt+r",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.simpleCheckReplace",
+        "key": "ctrl+alt+k",
         "when": "editorTextFocus"
       }
     ]

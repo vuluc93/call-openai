@@ -1,19 +1,78 @@
 import * as vscode from 'vscode';
 
-export interface TSFunctionInfo {
+export interface FunctionInfo {
   name: string;
   code: string;
   start: number;
   end: number;
 
+  content: string;
   docStart: number;
   docEnd: number;
-  docLines: number;
+  blockStart: number;
+  blockEnd: number;
 }
 
-export function extractTSFunctions(content: string): TSFunctionInfo[] {
+function extractPyFunctions(content: string): FunctionInfo[] {
   const lines = content.split("\n");
-  const functions: TSFunctionInfo[] = [];
+  const functions: FunctionInfo[] = [];
+
+//   const defRegex = /^(\s*)def\s+([A-Za-z0-9_]+)\s*\((.*)\):/;
+  const defRegex = /^(\s*)def\s+([A-Za-z_]\w*)\s*\(([^)]*)\)\s*(?:->\s*([^:]+))?:/;
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const match = line.match(defRegex);
+    if (!match) {
+      i++;
+      continue;
+    }
+
+    const indent = match[1];
+    const name = match[2];
+
+    let docStart = -1;
+    let docEnd = -1;
+
+    let start = i;
+    let j = i + 1;
+
+    while (
+      j < lines.length &&
+      (lines[j].startsWith(indent + " ") || lines[j].trim() === "")
+    ) {
+      j++;
+    }
+
+    const end = j - 1;
+    let code = lines.slice(start, end + 1).join("\n");
+
+    // Extract docstring triple-quote
+    const docRegex = /(""".*?""")|('''.*?''')/s;
+    const codeWithoutDoc = code.replace(docRegex, "").split('\n').filter(line => line.trim() !== '').join('\n').trim();
+
+    functions.push({
+      name,
+      code,
+      content: codeWithoutDoc,
+      start,
+      end,
+      docStart,
+      docEnd,
+      blockStart: start,
+      blockEnd: end,
+    });
+
+    i = end + 1;
+  }
+
+  return functions;
+}
+
+function extractTSFunctions(content: string): FunctionInfo[] {
+  const lines = content.split("\n");
+  const functions: FunctionInfo[] = [];
 
   // Nhận dạng function header
   const fnHeaderRegex =
@@ -119,21 +178,36 @@ export function extractTSFunctions(content: string): TSFunctionInfo[] {
 
     const fnEnd = k2 - 1;
     const code = lines.slice(fnStart, fnEnd + 1).join("\n");
+    const codeWithoutDoc = code.split('\n').filter(line => line.trim() !== '').join('\n').trim();
 
     functions.push({
       name,
       code,
+      content: codeWithoutDoc,
       start: fnStart,
       end: fnEnd,
       docStart,
       docEnd,
-      docLines,
+      blockStart: docStart,
+      blockEnd: fnEnd,
     });
 
     i = fnEnd + 1;
   }
 
   return functions;
+}
+
+export function extractListFunctions(content: string): FunctionInfo[] {
+  const editor = vscode.window.activeTextEditor;
+    if (editor) {
+      if (editor?.document.languageId === 'typescript') {
+		  return extractTSFunctions(content);
+    } else if (editor?.document.languageId === 'python') {
+      return extractPyFunctions(content);
+    }
+  }
+  return []
 }
 
 let jumpLines: number[] = [];
@@ -244,4 +318,45 @@ export async function jumpNextLine() {
     editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
 
     currentIndex = (currentIndex + 1) % jumpLines.length; // vòng lại đầu khi hết
+}
+
+export function findFunctionBlockByName(targetName: string): FunctionInfo | undefined {
+  const editor = vscode.window.activeTextEditor;
+  const allText = editor?.document.getText() || '';
+  const listFuncs = extractListFunctions(allText);
+  const func = listFuncs.find(item => item.name === targetName);
+  return func;
+}
+
+export async function showFunctionInfo() {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showErrorMessage('No active editor!');
+    return;
+  }
+
+  const selection = editor.selection;
+  const selectedText = editor.document.getText(selection);
+
+  // const textToProcess = selectedText && selectedText.trim() !== ""
+  //   ? selectedText : editor.document.getText();
+
+  const output = vscode.window.createOutputChannel("ListFunctions");
+  output.clear();
+  output.show(true);
+
+  if (selectedText && selectedText.trim() !== '') {
+    const func = findFunctionBlockByName(selectedText)
+		output.appendLine(`blockStart: ${func?.blockStart}`);
+    output.appendLine(`blockEnd: ${func?.blockEnd}`);
+    output.appendLine(`content: ${func?.content}`);
+  } else {
+    const allText = editor.document.getText();
+    const listFuncs = extractListFunctions(allText);
+    let index = 1;
+    for (const func of listFuncs) {
+      output.appendLine(`${index}. ${func.name}`);
+      index++;
+    }
+  }
 }

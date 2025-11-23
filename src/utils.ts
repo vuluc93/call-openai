@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import OpenAI from "openai";
 import { getSecret } from './secretManager';
 
-export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => Promise<T>) {
+export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => Promise<T>, max_tokens? : number) {
     const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     status.show();
 
@@ -21,7 +21,7 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
         const response = await client.responses.create({
             model: "gpt-4.1",
             input: prompt,
-            max_output_tokens: 350,
+            max_output_tokens: max_tokens || 800,
         });
 
         await fn(response.output_text ?? '{}');

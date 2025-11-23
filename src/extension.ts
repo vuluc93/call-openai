@@ -3,7 +3,16 @@ import { initSecrets } from './secretManager';
 import { replaceByRules } from './features/replaceByRules';
 import { fixWithOpenAI } from './features/fixWithOpenAI';
 import { shortAnswer } from './features/shortAnswer';
-import { extractTSFunctions, searchInFunctions, jumpNextLine } from './features/listFunctions';
+import { insertLoggerDebug } from './features/insertLoggerDebug';
+import { pasteMultiTimes } from './features/pasteMultiTimes';
+import { replaceLimited } from './features/replaceLimited';
+import { simpleCheckReplace } from './features/simpleCheckReplace';
+import { docstringAuto } from './features/docstringAuto';
+import {
+  showFunctionInfo,
+  searchInFunctions,
+  jumpNextLine,
+} from './features/listFunctions';
 
 const SECRET_KEY_NAME = 'openai.apiKey';
 
@@ -25,19 +34,21 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('OpenAI API key saved to VSCode Secret Storage.');
 	});
 
-	
-
 	context.subscriptions.push(disposableSetKey);
 	register(context, "extension.replaceByRules", replaceByRules);
  	register(context, "extension.fixWithOpenAI", fixWithOpenAI);
   	register(context, "extension.shortAnswer", shortAnswer);
-   	register(context, "extension.listFunction", showListFunction);
+   	register(context, "extension.listFunction", showFunctionInfo);
     register(context, "extension.searchInFunctions", searchInFunctions);
     register(context, "extension.jumpNextLine", jumpNextLine);
+	register(context, "extension.insertLoggerDebug", insertLoggerDebug);
+	register(context, "extension.pasteMultiTimes", pasteMultiTimes);
+	register(context, "extension.replaceLimited", replaceLimited);
+	register(context, "extension.simpleCheckReplace", simpleCheckReplace);
+ 	register(context, "extension.docstringAuto", docstringAuto);
 }
 
 export function deactivate() {}
-
 
 /**
  * Registers a new VSCode command and adds it to the extension context's subscriptions.
@@ -50,32 +61,4 @@ function register(ctx: vscode.ExtensionContext,
     cmd: string,
     fn: (...args: unknown[]) => unknown) {
     ctx.subscriptions.push(vscode.commands.registerCommand(cmd, fn));
-}
-
-export async function showListFunction() {
-  	const editor = vscode.window.activeTextEditor;
-	if (!editor) {
-		vscode.window.showErrorMessage('No active editor!');
-		return;
-	}
-
-	let textToProcess = "";
-    const selection = editor.selection;
-    const selectedText = editor.document.getText(selection);
-
-    if (selectedText && selectedText.trim() !== "") {
-        textToProcess = selectedText;
-    } else {
-        textToProcess = editor.document.getText();
-    }
-	const listFuncs = extractTSFunctions(textToProcess);
-
-	const output = vscode.window.createOutputChannel("ListFunctions");
-	output.clear();
-	output.show(true);
-	let index = 1;
-	for (const func of listFuncs) {
-		output.appendLine(`${index}. ${func.name}`);
-		index++;
-	}
 }
