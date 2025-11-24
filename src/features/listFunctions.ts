@@ -1,3 +1,4 @@
+import { start } from 'repl';
 import * as vscode from 'vscode';
 
 export interface FunctionInfo {
@@ -191,7 +192,7 @@ function extractTSFunctions(content: string): FunctionInfo[] {
       indent,
       docStart,
       docEnd,
-      blockStart: docStart,
+      blockStart: docStart > 0 ? docStart : fnStart,
       blockEnd: fnEnd,
     });
 
@@ -351,9 +352,10 @@ export async function showFunctionInfo() {
   output.show(true);
 
   if (selectedText && selectedText.trim() !== '') {
-    const func = findFunctionBlockByName(selectedText)
+    const func = findFunctionBlockByName(selectedText);
 		output.appendLine(`blockStart: ${func?.blockStart}`);
     output.appendLine(`blockEnd: ${func?.blockEnd}`);
+    output.appendLine(`indent: ${func?.indent}.`);
     output.appendLine(`content: ${func?.content}`);
   } else {
     const allText = editor.document.getText();
