@@ -13,17 +13,23 @@ export async function shortAnswer() {
   const source = editor.document.getText(selection);
   if (input) {
     const match = input.match(/^=+/); 
-    const count = match ? match[0].length : source ? 1 : 0;
+    const count = match ? match[0].length : source ? 2 : 0;
     const question = input.replace(/^=+/, '');
     const max_tokens = 50 * 4 ** count;
 
-    const rules = count === 0 ?
-      `Trả lời siêu ngắn gọn trong 1 câu.
-        Câu hỏi: `
-      : source ? `Với đoạn code ${editor?.document.languageId}:
+    let rules = '';
+    if (count === 0) {
+      rules = `Trả lời siêu ngắn gọn trong 1 câu.
+        Câu hỏi: `;
+    } else if (count === 1) {
+      rules = `Hãy trả lời ngắn gọn, giải thích sơ qua nếu cần thiết, không vượt quá 100 từ.
+        Câu hỏi: `;
+    } else if (source) {
+      rules = `Với đoạn code ${editor?.document.languageId}:
         ${source}
-        Câu hỏi: `
-        : ''
+        Câu hỏi: `;
+    }
+    
     const prompt = `${rules}${question}?`
     await fetchWithTimer(prompt, async (jsonString) => {
       outputShow(question, jsonString)

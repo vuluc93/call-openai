@@ -22,7 +22,7 @@ export async function docstringAuto() {
     output.clear();
     output.show(true);
 
-  const languageId = editor?.document.languageId
+  const languageId = editor?.document.languageId;
 	const listFuncs = extractListFunctions(textToProcess);
   const mapInput: { [key: string]: string } = {};
   const mapName: { [key: string]: string } = {};
@@ -66,9 +66,8 @@ export async function docstringAuto() {
       //   cleanResponse = cleanResponse.replace(/^```[a-zA-Z0-9]*\n/, '').replace(/\n```$/, '');
       // }
     for (const key in parsed) {
-      // if (parsed.hasOwnProperty(key)) {
       const docstring = parsed[key];
-      const funcName = mapName[key]
+      const funcName = mapName[key];
       const func = findFunctionBlockByName(funcName);
       if (func) {
         output.appendLine(`_____Function: ${func.name}_____`);
@@ -97,7 +96,7 @@ function createDocBlock(doc: string, indent: string, languageId: string): string
     return `${indent}/**\n${content}\n${indent} */`;
   }
   if (languageId === 'python') {
-    return `${indent}"""\n${doc.split('\n').join('\n' + indent)}\n${indent}"""`
+    return `${indent}"""\n${doc.split('\n').join('\n' + indent)}\n${indent}"""`;
   }
-  return doc.split('\n').join('\n' + indent)
+  return doc.split('\n').join('\n' + indent);
 }
