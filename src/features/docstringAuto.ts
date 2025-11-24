@@ -35,29 +35,31 @@ export async function docstringAuto() {
   }
   // output.appendLine(JSON.stringify(input, null, 2))
 
-  await fetchWithTimer(`
-    All functions provided below are written in ${languageId}.
+  const prompt = languageId === 'typescript' ? `
+    All functions provided below are written in typescript.
     Your task:
-    - For each function, generate a docstring in English.
-    - Only generate the docstring text (without /** */, //, /* */, or triple quotes).
-    - Do NOT modify any function code.
-    - Output TypeScript-style or Python-style docstring depending on languageId:
+    - Generate a TypeScript JSDoc docstring in English for each function.
+    - Use @param {Type} name - description
+    - Use @returns {Type} description
+    - Infer correct TypeScript types (number, string, boolean, GC.Spread.Sheets.Worksheet, void, Promise<void>, etc.)
+    - Only generate the docstring text (do NOT include /** */, /* */, or //).
+    - Do NOT modify the function code.
+  ` : languageId === 'python' ? `
+    All functions provided below are written in python.
+    Your task:
+    - Generate a Python docstring in English for each function using Google-style format.
+    - Start with a one-line summary, then a blank line.
+    - Use:
+        Args:
+          name (type): description
+        Returns:
+          type: description
+    - Infer correct Python types (str, int, float, list[dict], date, etc.)
+    - Only generate the docstring text (do NOT include triple quotes).
+    - Do NOT modify the function code.
+  ` : '';
 
-    If languageId is "typescript" or "ts":
-        - Use TypeScript JSDoc format.
-        - Use @param {Type} name - description
-        - Use @returns {Type} description
-        - Infer correct TypeScript types (number, string, boolean, GC.Spread.Sheets.Worksheet, void, Promise<void>, etc.)
-
-    If languageId is "python" or "py":
-        - Use Python docstring conventions (Google-style format).
-        - Start with a one-line summary, then a blank line.
-        - Use:
-            Args:
-                name (type): description
-            Returns:
-                type: description
-        - Infer correct Python types (str, int, float, list[dict], date, etc.)
+  await fetchWithTimer(`${prompt}
 
     Input:
     An object where each key is an ID and the value is the function code (string, no docstring included).
