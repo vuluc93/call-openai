@@ -57,7 +57,7 @@ export async function docstringAuto() {
   `, async (response) => {
     const output = vscode.window.createOutputChannel("FixWithOpenAI");
     output.clear();
-    output.appendLine(`[__________Docstrings__________]`);
+    output.appendLine(`[__________Response__________]`);
     output.show(true);
 
     let cleanResponse = response.trim();
@@ -70,13 +70,13 @@ export async function docstringAuto() {
       const funcName = mapName[key];
       const func = findFunctionBlockByName(funcName);
       if (func) {
-        output.appendLine(`_____Function: ${func.name}_____`);
-        const indent = func.content?.split("\n")[0].match(/^(\s*)/)?.[1] ?? "";
-        const docBlock = createDocBlock(docstring, indent, languageId);
+        output.appendLine(`\n_____Function: ${func.name}_____`);
+        // const indent = func.content?.split("\n")[0].match(/^(\s*)/)?.[1] ?? "";
+        const docBlock = createDocBlock(docstring, func.indent, languageId);
         output.appendLine(`_____Docstring:_____\n${docstring}`);
         await editor.edit(editBuilder => {
-          const start = new vscode.Position(func.start, 0);
-          const end = new vscode.Position(func.end + 1, 0);
+          const start = new vscode.Position(func.blockStart, 0);
+          const end = new vscode.Position(func.blockEnd + 1, 0);
           if (languageId === 'python') {
             const lines = func.content.split('\n');
             editBuilder.replace(new vscode.Range(start, end), `${lines[0]}\n${docBlock}\n${lines.slice(1).join('\n')}\n`);

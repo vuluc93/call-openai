@@ -30,9 +30,9 @@ export async function shortAnswer() {
         Câu hỏi: `;
     }
     
-    const prompt = `${rules}${question}?`
+    const prompt = `${rules}${question}?`;
     await fetchWithTimer(prompt, async (jsonString) => {
-      outputShow(question, jsonString)
+      outputShow(question, jsonString);
     }, max_tokens);
   }
 }

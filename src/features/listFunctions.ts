@@ -5,6 +5,7 @@ export interface FunctionInfo {
   code: string;
   start: number;
   end: number;
+  indent: string;
 
   content: string;
   docStart: number;
@@ -58,6 +59,7 @@ function extractPyFunctions(content: string): FunctionInfo[] {
       content: codeWithoutDoc,
       start,
       end,
+      indent,
       docStart,
       docEnd,
       blockStart: start,
@@ -76,7 +78,7 @@ function extractTSFunctions(content: string): FunctionInfo[] {
 
   // Nhận dạng function header
   const fnHeaderRegex =
-    /^\s*(export\s+)?(async\s+)?function\s+(\w+)\s*\(/;
+    /^(\s*)(export\s+)?(async\s+)?function\s+(\w+)\s*\(/;
 
   let i = 0;
 
@@ -88,6 +90,7 @@ function extractTSFunctions(content: string): FunctionInfo[] {
       continue;
     }
 
+    const indent = match[1];
     const name = match[3];
     const fnStart = i;
 
@@ -96,7 +99,6 @@ function extractTSFunctions(content: string): FunctionInfo[] {
     // =====================================
     let docStart = -1;
     let docEnd = -1;
-    let docLines = 0;
 
     let k = i - 1;
         // Quick ignore: if line above is empty and line above that isn't comment, assume no doc
@@ -186,6 +188,7 @@ function extractTSFunctions(content: string): FunctionInfo[] {
       content: codeWithoutDoc,
       start: fnStart,
       end: fnEnd,
+      indent,
       docStart,
       docEnd,
       blockStart: docStart,
@@ -299,8 +302,10 @@ export async function searchInFunctions() {
     }
 
     for (const [funcName, lines] of Object.entries(funcMatches)) {
-        output.appendLine(`__________${funcName}__________`);
-        lines.forEach(l => output.appendLine(`${l.lineNum} - ${l.text}`));
+      output.appendLine(`\n__________<${funcName}>__________`);
+      for (const l of lines) {
+        output.appendLine(`${l.lineNum} - ${l.text}`);
+      }
     }
 
     output.show(true);
