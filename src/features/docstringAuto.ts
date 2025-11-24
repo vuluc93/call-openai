@@ -38,12 +38,26 @@ export async function docstringAuto() {
   await fetchWithTimer(`
     All functions provided below are written in ${languageId}.
     Your task:
-    - For each function, generate a ${languageId}-style docstring in English.
-    - Clearly describe all parameters and their types.
-    - Clearly describe the return type.
-    - Do NOT modify the function code.
-    - Only generate the docstring text.
-    - Do NOT include /** */, /* */, // or any comment markers.
+    - For each function, generate a docstring in English.
+    - Only generate the docstring text (without /** */, //, /* */, or triple quotes).
+    - Do NOT modify any function code.
+    - Output TypeScript-style or Python-style docstring depending on languageId:
+
+    If languageId is "typescript" or "ts":
+        - Use TypeScript JSDoc format.
+        - Use @param {Type} name - description
+        - Use @returns {Type} description
+        - Infer correct TypeScript types (number, string, boolean, GC.Spread.Sheets.Worksheet, void, Promise<void>, etc.)
+
+    If languageId is "python" or "py":
+        - Use Python docstring conventions (Google-style format).
+        - Start with a one-line summary, then a blank line.
+        - Use:
+            Args:
+                name (type): description
+            Returns:
+                type: description
+        - Infer correct Python types (str, int, float, list[dict], date, etc.)
 
     Input:
     An object where each key is an ID and the value is the function code (string, no docstring included).
@@ -79,9 +93,9 @@ export async function docstringAuto() {
           const end = new vscode.Position(func.blockEnd + 1, 0);
           if (languageId === 'python') {
             const lines = func.content.split('\n');
-            editBuilder.replace(new vscode.Range(start, end), `${lines[0]}\n${docBlock}\n${lines.slice(1).join('\n')}\n`);
+            editBuilder.replace(new vscode.Range(start, end), `${func.indent}${lines[0]}\n${docBlock}\n${lines.slice(1).join('\n')}\n\n`);
           } else {
-            editBuilder.replace(new vscode.Range(start, end), `${docBlock}\n${func.content}\n`);
+            editBuilder.replace(new vscode.Range(start, end), `${docBlock}\n${func.indent}${func.content}\n`);
           }
         });
       }
@@ -96,7 +110,8 @@ function createDocBlock(doc: string, indent: string, languageId: string): string
     return `${indent}/**\n${content}\n${indent} */`;
   }
   if (languageId === 'python') {
-    return `${indent}"""\n${doc.split('\n').join('\n' + indent)}\n${indent}"""`;
+    const pyIndent = '    ' + indent;
+    return `${pyIndent}"""\n${pyIndent}${doc.split('\n').join('\n' + pyIndent)}\n${pyIndent}"""`;
   }
   return doc.split('\n').join('\n' + indent);
 }
