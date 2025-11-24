@@ -91,7 +91,7 @@ function extractTSFunctions(content: string): FunctionInfo[] {
     }
 
     const indent = match[1];
-    const name = match[3];
+    const name = match[4];
     const fnStart = i;
 
     // =====================================
