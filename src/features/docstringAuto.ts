@@ -95,7 +95,7 @@ export async function docstringAuto() {
           const end = new vscode.Position(func.blockEnd + 1, 0);
           if (languageId === 'python') {
             const lines = func.content.split('\n');
-            editBuilder.replace(new vscode.Range(start, end), `${func.indent}${lines[0]}\n${docBlock}${lines.slice(1).join('\n')}\n`);
+            editBuilder.replace(new vscode.Range(start, end), `${func.indent}${lines[0]}\n${docBlock}\n${lines.slice(1).join('\n')}\n`);
           } else {
             editBuilder.replace(new vscode.Range(start, end), `${docBlock}\n${func.indent}${func.content}\n`);
           }

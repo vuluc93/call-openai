@@ -51,8 +51,16 @@ function extractPyFunctions(content: string): FunctionInfo[] {
     let code = lines.slice(start, end + 1).join("\n");
 
     // Extract docstring triple-quote
-    const docRegex = /(""".*?""")|('''.*?''')/s;
-    const codeWithoutDoc = code.replace(docRegex, "");
+    const docRegex = /("""[\s\S]*?""")|(\'\'\'[\s\S]*?\'\'\')/;
+    const docMatch = code.match(docRegex);
+    let codeWithoutDoc = code;
+    if (docMatch) {
+      // Tìm vị trí bắt đầu và kết thúc của docstring trong code
+      const docStart = code.substr(0, docMatch.index!).split("\n").length - 1;
+      const docEnd = docStart + docMatch[0].split("\n").length - 1;
+      const codeLines = code.split("\n");
+      codeWithoutDoc = codeLines.filter((_, idx) => idx < docStart || idx > docEnd).join("\n");
+    }
 
     functions.push({
       name,
