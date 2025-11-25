@@ -40,9 +40,9 @@ export async function fixWithOpenAI() {
       output.clear();
       output.appendLine(`[__________Replace__________]`);
       output.appendLine(`${source}`);
-      output.appendLine(`[___________With___________]`);
+      output.appendLine(`\n[___________With___________]`);
       output.appendLine(`${newCode}`);
-      output.appendLine(`[_________Explanation_________]`);
+      output.appendLine(`\n[_________Explanation_________]`);
       output.appendLine(`${parsed.explanation}`);
       output.show(true);
     });

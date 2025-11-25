@@ -42,7 +42,7 @@ function outputShow(question: string, jsonString: string) {
   output.clear();
   output.appendLine(`[__________Question__________]`);
   output.appendLine(`${question}`);
-  output.appendLine(`[___________Answer___________]`);
+  output.appendLine(`\n[___________Answer___________]`);
   output.appendLine(`${jsonString}`);
   output.show(true);
 }

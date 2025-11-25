@@ -113,8 +113,7 @@ function createDocBlock(doc: string, indent: string, languageId: string): string
   }
   if (languageId === 'python') {
     const pyIndent = '    ' + indent;
-    const docLines = doc.split("\n").map(line => line.trim());
-    const content = docLines.map(l => l ? `${pyIndent}${l}` : ``).join("\n");
+    const content = doc.split("\n").map(l => l ? `${pyIndent}${l}` : ``).join("\n");
     return `${pyIndent}"""\n${content}\n${pyIndent}"""`;
   }
   return doc.split('\n').join('\n' + indent);
