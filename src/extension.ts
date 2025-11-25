@@ -8,6 +8,7 @@ import { pasteMultiTimes } from './features/pasteMultiTimes';
 import { replaceLimited } from './features/replaceLimited';
 import { simpleCheckReplace } from './features/simpleCheckReplace';
 import { docstringAuto } from './features/docstringAuto';
+import { moveFunction } from './features/moveFunction';
 import {
   showFunctionInfo,
   searchInFunctions,
@@ -46,6 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	register(context, "extension.replaceLimited", replaceLimited);
 	register(context, "extension.simpleCheckReplace", simpleCheckReplace);
  	register(context, "extension.docstringAuto", docstringAuto);
+  	register(context, "extension.moveFunction", moveFunction);
 }
 
 export function deactivate() {}

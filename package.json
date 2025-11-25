@@ -46,6 +46,10 @@
         "title": "Jump Next Search Result"
       },
       {
+        "command": "extension.moveFunction",
+        "title": "Move function"
+      },
+      {
         "command": "extension.insertLoggerDebug",
         "title": "Insert logger debug"
       },
@@ -100,6 +104,11 @@
       {
         "command": "extension.jumpNextLine",
         "key": "ctrl+alt+.",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.moveFunction",
+        "key": "ctrl+alt+m",
         "when": "editorTextFocus"
       },
       {
