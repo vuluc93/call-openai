@@ -52,7 +52,7 @@ function extractPyFunctions(content: string): FunctionInfo[] {
 
     // Extract docstring triple-quote
     const docRegex = /(""".*?""")|('''.*?''')/s;
-    const codeWithoutDoc = code.replace(docRegex, "").split('\n').filter(line => line.trim() !== '').join('\n').trim();
+    const codeWithoutDoc = code.replace(docRegex, "");
 
     functions.push({
       name,
@@ -181,12 +181,12 @@ function extractTSFunctions(content: string): FunctionInfo[] {
 
     const fnEnd = k2 - 1;
     const code = lines.slice(fnStart, fnEnd + 1).join("\n");
-    const codeWithoutDoc = code.split('\n').filter(line => line.trim() !== '').join('\n').trim();
+    // const codeWithoutDoc = code.split('\n').filter(line => line.trim() !== '').join('\n').trim();
 
     functions.push({
       name,
       code,
-      content: codeWithoutDoc,
+      content: code,
       start: fnStart,
       end: fnEnd,
       indent,

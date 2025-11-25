@@ -29,7 +29,7 @@ export async function docstringAuto() {
 
   if (listFuncs.length > 0) {
     for (let i = 0; i < listFuncs.length; i++) {
-      mapInput[i.toString()] = listFuncs[i].content;
+      mapInput[i.toString()] = listFuncs[i].content.split('\n').filter(line => line.trim() !== '').join('\n').trim();
       mapName[i.toString()] = listFuncs[i].name;
     }
   }
