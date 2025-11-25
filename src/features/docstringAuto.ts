@@ -95,7 +95,7 @@ export async function docstringAuto() {
           const end = new vscode.Position(func.blockEnd + 1, 0);
           if (languageId === 'python') {
             const lines = func.content.split('\n');
-            editBuilder.replace(new vscode.Range(start, end), `${func.indent}${lines[0]}\n${docBlock}\n${lines.slice(1).join('\n')}\n\n`);
+            editBuilder.replace(new vscode.Range(start, end), `${func.indent}${lines[0]}\n${docBlock}${lines.slice(1).join('\n')}\n`);
           } else {
             editBuilder.replace(new vscode.Range(start, end), `${docBlock}\n${func.indent}${func.content}\n`);
           }
@@ -113,7 +113,9 @@ function createDocBlock(doc: string, indent: string, languageId: string): string
   }
   if (languageId === 'python') {
     const pyIndent = '    ' + indent;
-    return `${pyIndent}"""\n${pyIndent}${doc.split('\n').join('\n' + pyIndent)}\n${pyIndent}"""`;
+    const docLines = doc.split("\n").map(line => line.trim());
+    const content = docLines.map(l => l ? `${pyIndent}${l}` : ``).join("\n");
+    return `${pyIndent}"""\n${content}\n${pyIndent}"""`;
   }
   return doc.split('\n').join('\n' + indent);
 }
