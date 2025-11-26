@@ -33,7 +33,6 @@ export async function docstringAuto() {
       mapName[i.toString()] = listFuncs[i].name;
     }
   }
-  // output.appendLine(JSON.stringify(input, null, 2))
 
   const prompt = languageId === 'typescript' ? `
     All functions provided below are written in typescript.
@@ -91,15 +90,17 @@ export async function docstringAuto() {
         output.appendLine(`_____Docstring:_____\n${docstring}`);
         await editor.edit(editBuilder => {
           const start = new vscode.Position(func.blockStart, 0);
-          const end = editor.document.lineAt(func.blockEnd + 1).range.end;
-          let newContent = '';
+          const lines = func.content.split('\n');
+
           if (languageId === 'python') {
-            const lines = func.content.split('\n');
-            newContent = `${lines[0]}\n${docBlock}\n${lines.slice(1).join('\n')}`;
+            const end = new vscode.Position(func.blockEnd + 2 - lines.length, 0);
+            const newContent = `${lines[0]}\n${docBlock}\n`;
+            editBuilder.replace(new vscode.Range(start, end), newContent);
           } else {
-            newContent = `${docBlock}\n${func.indent}${func.content}`;
+            const end = new vscode.Position(func.blockEnd + 1 - lines.length, 0);
+            const newContent = `${docBlock}\n`;
+            editBuilder.replace(new vscode.Range(start, end), newContent);
           }
-          editBuilder.replace(new vscode.Range(start, end), newContent);
         });
       }
     }
