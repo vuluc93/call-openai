@@ -30,26 +30,26 @@ export async function moveFunction() {
     const line = editor.selection.active.line;
     const nextFunc = listFuncs.find(item => item.blockStart > line);
     if (nextFunc) {
-        goToLine(nextFunc.blockStart)
+      goToLine(nextFunc.blockStart);
     }
   }
 }
 
 function goToLine(line: number) {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) { return; }
 
-    const position = new vscode.Position(line, 0);
+  const position = new vscode.Position(line, 0);
 
-    // Move cursor
-    editor.selection = new vscode.Selection(position, position);
+  // Move cursor
+  editor.selection = new vscode.Selection(position, position);
 
-    // Scroll & focus to the line
-    editor.revealRange(
-        new vscode.Range(position, position),
-        vscode.TextEditorRevealType.InCenter
-    );
+  // Scroll & focus to the line
+  editor.revealRange(
+      new vscode.Range(position, position),
+      vscode.TextEditorRevealType.InCenter
+  );
 
-    // Focus vào editor (nếu cần)
-    vscode.window.showTextDocument(editor.document, { preview: false });
+  // Focus vào editor (nếu cần)
+  vscode.window.showTextDocument(editor.document, { preview: false });
 }

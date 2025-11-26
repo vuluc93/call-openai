@@ -87,18 +87,19 @@ export async function docstringAuto() {
       const func = findFunctionBlockByName(funcName);
       if (func) {
         output.appendLine(`\n_____Function: ${func.name}_____`);
-        // const indent = func.content?.split("\n")[0].match(/^(\s*)/)?.[1] ?? "";
         const docBlock = createDocBlock(docstring, func.indent, languageId);
         output.appendLine(`_____Docstring:_____\n${docstring}`);
         await editor.edit(editBuilder => {
           const start = new vscode.Position(func.blockStart, 0);
-          const end = new vscode.Position(func.blockEnd + 1, 0);
+          const end = editor.document.lineAt(func.blockEnd).range.end;
+          let newContent = '';
           if (languageId === 'python') {
             const lines = func.content.split('\n');
-            editBuilder.replace(new vscode.Range(start, end), `${lines[0]}\n${docBlock}\n${lines.slice(1).join('\n')}\n`);
+            newContent = `${lines[0]}\n${docBlock}\n${lines.slice(1).join('\n')}`;
           } else {
-            editBuilder.replace(new vscode.Range(start, end), `${docBlock}\n${func.indent}${func.content}\n`);
+            newContent = `${docBlock}\n${func.indent}${func.content}`;
           }
+          editBuilder.replace(new vscode.Range(start, end), newContent);
         });
       }
     }
