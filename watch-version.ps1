@@ -36,14 +36,15 @@ while ($true) {
         # install
         code --install-extension $vsix.Name
 
+        # update last-version
+        $currentVersion | Out-File $versionFile
+
         Write-Host "Committing to Git..." -ForegroundColor Yellow
         git add .
         git commit -m "Version $currentVersion"
         git push
         Write-Host "Git push done." -ForegroundColor Green
 
-        # update last-version
-        $currentVersion | Out-File $versionFile
 
         $lastVersion = $currentVersion
         Write-Host "Done!"
