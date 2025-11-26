@@ -91,7 +91,7 @@ export async function docstringAuto() {
         output.appendLine(`_____Docstring:_____\n${docstring}`);
         await editor.edit(editBuilder => {
           const start = new vscode.Position(func.blockStart, 0);
-          const end = editor.document.lineAt(func.blockEnd).range.end;
+          const end = editor.document.lineAt(func.blockEnd + 1).range.end;
           let newContent = '';
           if (languageId === 'python') {
             const lines = func.content.split('\n');
