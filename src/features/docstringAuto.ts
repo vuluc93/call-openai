@@ -34,29 +34,34 @@ export async function docstringAuto() {
     }
   }
 
-  const prompt = languageId === 'typescript' ? `
-    All functions provided below are written in typescript.
-    Your task:
-    - Generate a TypeScript JSDoc docstring in English for each function.
-    - Use @param {Type} name - description
-    - Use @returns {Type} description
-    - Infer correct TypeScript types (number, string, boolean, GC.Spread.Sheets.Worksheet, void, Promise<void>, etc.)
-    - Only generate the docstring text (do NOT include /** */, /* */, or //).
-    - Do NOT modify the function code.
-  ` : languageId === 'python' ? `
-    All functions provided below are written in python.
-    Your task:
-    - Generate a Python docstring in English for each function using Google-style format.
-    - Start with a one-line summary, then a blank line.
-    - Use:
-        Args:
-          name (type): description
-        Returns:
-          type: description
-    - Infer correct Python types (str, int, float, list[dict], date, etc.)
-    - Only generate the docstring text (do NOT include triple quotes).
-    - Do NOT modify the function code.
-  ` : '';
+  let prompt = '';
+  if (languageId === 'typescript') {
+    prompt = `
+      All functions provided below are written in typescript.
+      Your task:
+      - Generate a TypeScript JSDoc docstring in English for each function.
+      - Use @param {Type} name - description
+      - Use @returns {Type} description
+      - Infer correct TypeScript types (number, string, boolean, GC.Spread.Sheets.Worksheet, void, Promise<void>, etc.)
+      - Only generate the docstring text (do NOT include /** */, /* */, or //).
+      - Do NOT modify the function code.
+    `;
+  } else if (languageId === 'python') {
+    prompt = `
+      All functions provided below are written in python.
+      Your task:
+      - Generate a Python docstring in English for each function using Google-style format.
+      - Start with a one-line summary, then a blank line.
+      - Use:
+          Args:
+            name (type): description
+          Returns:
+            type: description
+      - Infer correct Python types (str, int, float, list[dict], date, etc.)
+      - Only generate the docstring text (do NOT include triple quotes).
+      - Do NOT modify the function code.
+    `;
+  }
 
   await fetchWithTimer(`${prompt}
 
@@ -76,18 +81,16 @@ export async function docstringAuto() {
     output.show(true);
 
     let cleanResponse = response.trim();
-    const parsed = JSON.parse(cleanResponse);    
-    // if (cleanResponse.startsWith('```')) {
-      //   cleanResponse = cleanResponse.replace(/^```[a-zA-Z0-9]*\n/, '').replace(/\n```$/, '');
-      // }
+    const parsed = JSON.parse(cleanResponse);
+
     for (const key in parsed) {
       const docstring = parsed[key];
       const funcName = mapName[key];
       const func = findFunctionBlockByName(funcName);
       if (func) {
-        output.appendLine(`\n_____Function: ${func.name}_____`);
+        output.appendLine(`\n_____Function: <${func.name}>_____`);
         const docBlock = createDocBlock(docstring, func.indent, languageId);
-        output.appendLine(`_____Docstring:_____\n${docstring}`);
+        output.appendLine(`_____Docstring_____\n${docstring}`);
         await editor.edit(editBuilder => {
           const start = new vscode.Position(func.blockStart, 0);
           const lines = func.content.split('\n');

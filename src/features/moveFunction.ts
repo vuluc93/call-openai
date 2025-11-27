@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import {
   extractListFunctions,
-  findFunctionBlockByName,
+  // findFunctionBlockByName,
 } from './listFunctions';
 
 export async function moveFunction() {
@@ -19,18 +19,18 @@ export async function moveFunction() {
   output.show(true);
 
   if (selectedText && selectedText.trim() !== '') {
-    // const func = findFunctionBlockByName(selectedText);
-    //     output.appendLine(`blockStart: ${func?.blockStart}`);
-    // output.appendLine(`blockEnd: ${func?.blockEnd}`);
-    // output.appendLine(`indent: ${func?.indent}.`);
-    // output.appendLine(`content: ${func?.content}`);
+    //
   } else {
     const allText = editor.document.getText();
     const listFuncs = extractListFunctions(allText);
-    const line = editor.selection.active.line;
-    const nextFunc = listFuncs.find(item => item.blockStart > line);
-    if (nextFunc) {
-      goToLine(nextFunc.blockStart);
+    if (listFuncs.length) {
+      const line = editor.selection.active.line;
+      const nextFunc = listFuncs.find(item => item.blockStart > line);
+      if (nextFunc) {
+        goToLine(nextFunc.blockStart);
+      } else {
+        goToLine(listFuncs[0].blockStart);
+      }
     }
   }
 }
