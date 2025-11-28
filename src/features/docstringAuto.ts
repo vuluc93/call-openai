@@ -40,8 +40,10 @@ export async function docstringAuto() {
       All functions provided below are written in typescript.
       Your task:
       - Generate a TypeScript JSDoc docstring in English for each function.
-      - Use @param {Type} name - description
-      - Use @returns {Type} description
+      - Start with a one-line summary describing the function's purpose.
+      - After the summary, insert exactly one blank line.
+      - Then output all parameters using: @param {Type} name - description
+      - Then output the return type using: @returns {Type} description
       - Infer correct TypeScript types (number, string, boolean, GC.Spread.Sheets.Worksheet, void, Promise<void>, etc.)
       - Only generate the docstring text (do NOT include /** */, /* */, or //).
       - Do NOT modify the function code.
