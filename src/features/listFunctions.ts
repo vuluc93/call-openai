@@ -179,11 +179,21 @@ function extractTSFunctions(content: string): FunctionInfo[] {
       (lines[j].match(/}/g) || []).length;
 
     let k2 = j + 1;
+    let subFunc = false
     while (k2 < lines.length && braceCount > 0) {
       const ln = lines[k2];
+      if (ln.match(fnHeaderRegex)) {
+        subFunc = true
+        break;
+      }
       braceCount += (ln.match(/{/g) || []).length;
       braceCount -= (ln.match(/}/g) || []).length;
       k2++;
+    }
+
+    if (subFunc) {
+      i = k2;
+      continue;
     }
 
     const fnEnd = k2 - 1;

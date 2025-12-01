@@ -13,6 +13,12 @@ export async function fixWithOpenAI() {
   });
 
   if (instruction) {
+    const output = vscode.window.createOutputChannel("FixWithOpenAI");
+    output.clear();
+    output.appendLine(`[_________instruction_________]`);
+    output.appendLine(`${instruction}`);
+    output.show(true);
+
     await fetchWithTimer(`
         Bạn là trợ lý sửa code ${editor?.document.languageId}.
         Dưới đây là đoạn code cần sửa, luôn giữ nguyên code gốc nhiều nhất có thể:
@@ -36,15 +42,12 @@ export async function fixWithOpenAI() {
         editBuilder.replace(selection, newCode.split('\n').join('\n' + indent));
       });
 
-      const output = vscode.window.createOutputChannel("FixWithOpenAI");
-      output.clear();
-      output.appendLine(`[__________Replace__________]`);
+      output.appendLine(`\n[__________replace__________]`);
       output.appendLine(`${source}`);
-      output.appendLine(`\n[___________With___________]`);
+      output.appendLine(`\n[___________with___________]`);
       output.appendLine(`${newCode}`);
-      output.appendLine(`\n[_________Explanation_________]`);
+      output.appendLine(`\n[_________explanation_________]`);
       output.appendLine(`${parsed.explanation}`);
-      output.show(true);
     });
   }
 }

@@ -31,18 +31,25 @@ export async function shortAnswer() {
     }
     
     const prompt = `${rules}${question}?`;
+    const output = vscode.window.createOutputChannel("ShortAnswer");
+    output.clear();
+    output.appendLine(`[__________question__________]`);
+    output.appendLine(`${question}`);
+    output.show(true);
+
     await fetchWithTimer(prompt, async (jsonString) => {
-      outputShow(question, jsonString);
+      output.appendLine(`\n[___________answer___________]`);
+      output.appendLine(`${jsonString}`);
     }, max_tokens);
   }
 }
 
-function outputShow(question: string, jsonString: string) {
-  const output = vscode.window.createOutputChannel("ShortAnswer");
-  output.clear();
-  output.appendLine(`[__________Question__________]`);
-  output.appendLine(`${question}`);
-  output.appendLine(`\n[___________Answer___________]`);
-  output.appendLine(`${jsonString}`);
-  output.show(true);
-}
+// function outputShow(question: string, jsonString: string) {
+//   const output = vscode.window.createOutputChannel("ShortAnswer");
+//   output.clear();
+//   output.appendLine(`[__________Question__________]`);
+//   output.appendLine(`${question}`);
+//   output.appendLine(`\n[___________Answer___________]`);
+//   output.appendLine(`${jsonString}`);
+//   output.show(true);
+// }
