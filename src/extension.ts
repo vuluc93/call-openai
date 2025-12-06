@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { initSecrets } from './secretManager';
+import { initMemoryFS } from './memoryFsManager';
 import { replaceByRules } from './features/replaceByRules';
 import { fixWithOpenAI } from './features/fixWithOpenAI';
 import { shortAnswer } from './features/shortAnswer';
@@ -34,11 +35,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		await context.secrets.store(SECRET_KEY_NAME, key);
 		vscode.window.showInformationMessage('OpenAI API key saved to VSCode Secret Storage.');
 	});
-
 	context.subscriptions.push(disposableSetKey);
+
+	initMemoryFS(context);
+
 	register(context, "extension.replaceByRules", replaceByRules);
  	register(context, "extension.fixWithOpenAI", fixWithOpenAI);
   	register(context, "extension.shortAnswer", shortAnswer);
+   	// register(context, "extension.toggleExtendedInput", toggleExtendedInput);
    	register(context, "extension.listFunction", showFunctionInfo);
     register(context, "extension.searchInFunctions", searchInFunctions);
     register(context, "extension.jumpNextLine", jumpNextLine);
