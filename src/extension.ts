@@ -2,8 +2,7 @@ import * as vscode from 'vscode';
 import { initSecrets } from './secretManager';
 import { initMemoryFS } from './memoryFsManager';
 import { replaceByRules } from './features/replaceByRules';
-import { fixWithOpenAI } from './features/fixWithOpenAI';
-import { shortAnswer } from './features/shortAnswer';
+import { inputBox, inputMutilLines } from './features/inputPrompt';
 import { insertLoggerDebug } from './features/insertLoggerDebug';
 import { pasteMultiTimes } from './features/pasteMultiTimes';
 import { replaceLimited } from './features/replaceLimited';
@@ -40,8 +39,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	initMemoryFS(context);
 
 	register(context, "extension.replaceByRules", replaceByRules);
- 	register(context, "extension.fixWithOpenAI", fixWithOpenAI);
-  	register(context, "extension.shortAnswer", shortAnswer);
+ 	register(context, "extension.inputBox", inputBox);
+  	register(context, "extension.inputMutilLines", inputMutilLines);
    	// register(context, "extension.toggleExtendedInput", toggleExtendedInput);
    	register(context, "extension.listFunction", showFunctionInfo);
     register(context, "extension.searchInFunctions", searchInFunctions);

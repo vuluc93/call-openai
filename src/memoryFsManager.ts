@@ -3,28 +3,50 @@ import * as vscode from 'vscode';
 class MemoryFS implements vscode.FileSystemProvider {
   private files = new Map<string, Uint8Array>();
   private emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
+  private stats = new Map<string, vscode.FileStat>();
 
   readonly onDidChangeFile = this.emitter.event;
 
   readFile(uri: vscode.Uri): Uint8Array {
-      return this.files.get(uri.toString()) ?? new Uint8Array();
+    const key = uri.toString();
+    const data = this.files.get(key);
+    if (!data) throw vscode.FileSystemError.FileNotFound();
+    return data;
   }
 
-  writeFile(uri: vscode.Uri, content: Uint8Array): void {
-      this.files.set(uri.toString(), content);
-      this.emitter.fire([{ type: vscode.FileChangeType.Changed, uri }]);
+  writeFile(uri: vscode.Uri, content: Uint8Array) {
+    const key = uri.toString();
+
+    // const exists = this.files.has(key);
+
+    // if (!exists && !options.create) throw vscode.FileSystemError.FileNotFound();
+    // if (exists && !options.overwrite) throw vscode.FileSystemError.FileExists();
+
+    this.files.set(key, content);
+
+    this.stats.set(key, {
+      type: vscode.FileType.File,
+      ctime: Date.now(),
+      mtime: Date.now(),
+      size: content.byteLength,
+    });
+
+    // this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
   }
 
-  stat(_uri: vscode.Uri): vscode.FileStat {
-      return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: 0 };
+  stat(uri: vscode.Uri): vscode.FileStat {
+    const key = uri.toString();
+    const stat = this.stats.get(key);
+    if (!stat) throw vscode.FileSystemError.FileNotFound();
+    return stat;
   }
 
   readDirectory(): [string, vscode.FileType][] {
-      return [];
+    return [];
   }
 
   watch(): vscode.Disposable {
-      return { dispose() {} };
+    return { dispose() {} };
   }
 
   createDirectory() {}
@@ -34,17 +56,29 @@ class MemoryFS implements vscode.FileSystemProvider {
 
 const memFs = new MemoryFS();
 
+/**
+ * Initializes the in-memory file system (MemoryFS) for the VS Code extension.
+ * Registers the 'tempinput' file system provider and ensures documents are saved when changed.
+ *
+ * @param context The VS Code extension context
+ */
 export function initMemoryFS(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
-    vscode.workspace.registerFileSystemProvider("tempinput", memFs, { isReadonly: false }),
+    vscode.workspace.registerFileSystemProvider('tempinput', memFs, { isReadonly: false }),
     vscode.workspace.onDidChangeTextDocument(e => {
-      if (e.document.uri.scheme === "tempinput" && !e.document.isClosed) {
+      if (e.document.uri.scheme === 'tempinput' && !e.document.isClosed) {
         e.document.save();
       }
     })
   );
 }
 
+/**
+ * Opens a temporary text editor with the provided initial text.
+ *
+ * @param {string} initialText - The initial text to populate in the editor (optional).
+ * @returns {Promise<vscode.TextEditor>} The opened text editor instance.
+ */
 export async function openTempEditor(initialText = '') {
   const uri = vscode.Uri.parse("tempinput:/extended-input");
   memFs.writeFile(uri, Buffer.from(initialText));

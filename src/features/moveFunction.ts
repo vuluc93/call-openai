@@ -46,8 +46,8 @@ function goToLine(line: number) {
 
   // Scroll & focus to the line
   editor.revealRange(
-      new vscode.Range(position, position),
-      vscode.TextEditorRevealType.InCenter
+    new vscode.Range(position, position),
+    vscode.TextEditorRevealType.InCenter
   );
 
   // Focus vào editor (nếu cần)

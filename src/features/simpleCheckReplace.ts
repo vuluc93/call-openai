@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 type ReplaceGuess = { X: string; Y: string; count: number };
 
-function normalizeText(src: string): string {
+export function normalizeText(src: string): string {
   return src
     .split(/\r?\n/)               // tách từng dòng
     .map(line => line.trim())     // bỏ khoảng trắng 2 đầu
@@ -10,7 +10,7 @@ function normalizeText(src: string): string {
     .join("\n");                  // ghép lại
 }
 
-function simpleCharReplace(A: string, B: string, maxLen?: number): ReplaceGuess {
+export function simpleCharReplace(A: string, B: string, maxLen?: number): ReplaceGuess {
     if (A === B) {
         return { X: "", Y: "", count: 0 };
     }
@@ -66,10 +66,10 @@ export async function simpleCheckReplace() {
 
     const output = vscode.window.createOutputChannel("Compare Result");
     output.clear();
-    output.appendLine(`[__________Replace__________]`);
+    output.appendLine(`\n[__________replace__________]`);
     output.appendLine(`${result.X}`);
-    output.appendLine(`[__________With__________]`);
+    output.appendLine(`\n[__________with__________]`);
     output.appendLine(`${result.Y}`);
-    output.appendLine(`[__________Count = ${result.count}__________]`);
+    output.appendLine(`\n[__________count = ${result.count}__________]`);
     output.show(true);
 }
