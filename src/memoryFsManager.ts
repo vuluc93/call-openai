@@ -1,26 +1,23 @@
 import * as vscode from 'vscode';
 
 class MemoryFS implements vscode.FileSystemProvider {
-  private files = new Map<string, Uint8Array>();
-  private emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
-  private stats = new Map<string, vscode.FileStat>();
+  private readonly files = new Map<string, Uint8Array>();
+  private readonly emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
+  private readonly stats = new Map<string, vscode.FileStat>();
 
   readonly onDidChangeFile = this.emitter.event;
 
   readFile(uri: vscode.Uri): Uint8Array {
     const key = uri.toString();
     const data = this.files.get(key);
-    if (!data) throw vscode.FileSystemError.FileNotFound();
+    if (!data) {
+      throw vscode.FileSystemError.FileNotFound();
+    }
     return data;
   }
 
   writeFile(uri: vscode.Uri, content: Uint8Array) {
     const key = uri.toString();
-
-    // const exists = this.files.has(key);
-
-    // if (!exists && !options.create) throw vscode.FileSystemError.FileNotFound();
-    // if (exists && !options.overwrite) throw vscode.FileSystemError.FileExists();
 
     this.files.set(key, content);
 
@@ -31,13 +28,14 @@ class MemoryFS implements vscode.FileSystemProvider {
       size: content.byteLength,
     });
 
-    // this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
   }
 
   stat(uri: vscode.Uri): vscode.FileStat {
     const key = uri.toString();
     const stat = this.stats.get(key);
-    if (!stat) throw vscode.FileSystemError.FileNotFound();
+    if (!stat) {
+      throw vscode.FileSystemError.FileNotFound();
+    }
     return stat;
   }
 
@@ -85,5 +83,11 @@ export async function openTempEditor(initialText = '') {
 
   const doc = await vscode.workspace.openTextDocument(uri);
   const editor = await vscode.window.showTextDocument(doc, { preview: false });
+
+  const lastLine = doc.lineCount - 1;
+  const pos = new vscode.Position(lastLine, 0);
+  editor.selection = new vscode.Selection(pos, pos);
+  editor.revealRange(new vscode.Range(pos, pos));
+
   return editor;
 }

@@ -41,7 +41,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	register(context, "extension.replaceByRules", replaceByRules);
  	register(context, "extension.inputBox", inputBox);
   	register(context, "extension.inputMutilLines", inputMutilLines);
-   	// register(context, "extension.toggleExtendedInput", toggleExtendedInput);
    	register(context, "extension.listFunction", showFunctionInfo);
     register(context, "extension.searchInFunctions", searchInFunctions);
     register(context, "extension.jumpNextLine", jumpNextLine);

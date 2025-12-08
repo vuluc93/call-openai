@@ -19,7 +19,7 @@ export async function inputBox() {
         if (source) {
             await fixWithOpenAI(input, selection);
         } else {
-            await handleAnswer(input)
+            await handleAnswer(input);
         }
     }
 }
@@ -98,7 +98,6 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
   const editor = vscode.window.activeTextEditor;
   if (!editor) { return; }
 
-//   const selection = editor.selection;
   const source = editor.document.getText(selection);
 
     const output = vscode.window.createOutputChannel("FixWithOpenAI");
