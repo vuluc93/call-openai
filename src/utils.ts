@@ -1,4 +1,7 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 import OpenAI from "openai";
 import { getSecret } from './secretManager';
 
@@ -23,6 +26,7 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
             input: prompt,
             max_output_tokens: max_tokens || 800,
         });
+        logToFile(prompt, response.output_text ?? '{}');
 
         await fn(response.output_text ?? '{}');
         // return result;
@@ -34,3 +38,27 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
         status.dispose();
     }
 }
+
+/**
+ * Logs the input and response to a file.
+ * The log file is named based on the current date. If the directory does not exist, it is created recursively.
+ * Each log entry includes a timestamped header, a summary of the input (first line), the response, and a separator.
+ *
+ * @param input - The input string to log (usually the user's input or request).
+ * @param response - The response string to log (usually the application's output or response).
+ */
+function logToFile(input: string, response: string) {
+    const logDir = path.join('D:\call-openai', 'logs');
+    if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+    }
+    const logPath = path.join(logDir, `log-${new Date().toISOString().slice(0,10)}.txt`);
+    const firstLineInput = input.split('\n').find(line => line.trim().length > 0);
+    const logEntry = [
+        `[${new Date().toISOString()}] ${firstLineInput}`,
+        `${response}`,
+        '\n'
+    ].join('\n');
+    fs.appendFileSync(logPath, logEntry, 'utf8');
+}
+
