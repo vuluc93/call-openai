@@ -48,17 +48,18 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
  * @param response - The response string to log (usually the application's output or response).
  */
 function logToFile(input: string, response: string) {
-    const logDir = path.join('D:\call-openai', 'logs');
+    // const logDir = path.join('D:\backup\call-openai', 'logs');
+    const logDir = String.raw`D:\backup\call-openai\logs`;
     if (!fs.existsSync(logDir)) {
         fs.mkdirSync(logDir, { recursive: true });
     }
     const logPath = path.join(logDir, `log-${new Date().toISOString().slice(0,10)}.txt`);
-    const firstLineInput = input.split('\n').find(line => line.trim().length > 0);
+    // const firstLineInput = input.split('\n').find(line => line.trim().length > 0);
     const logEntry = [
-        `[${new Date().toISOString()}] ${firstLineInput}`,
+        `--${new Date().toISOString()}--`,
+        `[${input.substring(0, 100)}]`,
         `${response}`,
         '\n'
     ].join('\n');
     fs.appendFileSync(logPath, logEntry, 'utf8');
 }
-
