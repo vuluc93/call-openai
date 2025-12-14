@@ -20,11 +20,12 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
     try {
         const apiKey = await getSecret();
         const client = new OpenAI({ apiKey });
+        const max_output_tokens = max_tokens || 800
 
         const response = await client.responses.create({
-            model: "gpt-4.1",
+            model: max_output_tokens > 800 ? 'gpt-4.1' : 'gpt-5.2',
             input: prompt,
-            max_output_tokens: max_tokens || 800,
+            max_output_tokens,
         });
         logToFile(prompt, response.output_text ?? '{}');
 
@@ -56,8 +57,8 @@ function logToFile(input: string, response: string) {
     const logPath = path.join(logDir, `log-${new Date().toISOString().slice(0,10)}.txt`);
     // const firstLineInput = input.split('\n').find(line => line.trim().length > 0);
     const logEntry = [
-        `--${new Date().toISOString()}--`,
-        `[${input.substring(0, 100)}]`,
+        `${'-'.repeat(60)}<${new Date().toISOString()}>${'-'.repeat(60)}`,
+        `[${input.substring(0, 150)}]`,
         `${response}`,
         '\n'
     ].join('\n');
