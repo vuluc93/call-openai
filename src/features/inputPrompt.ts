@@ -66,7 +66,7 @@ async function handleAnswer(input: string, source?: string) {
   const match = input.match(/^[=']+/); 
   const count = match ? match[0].length : source ? 2 : 0;
   const question = input.replace(/^[=']+/, '');
-  const max_tokens = 50 * 4 ** count;
+  const max_tokens = 64 * 4 ** count;
 
   let rules = '';
   if (count === 0) {
