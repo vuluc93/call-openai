@@ -20,10 +20,10 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
     try {
         const apiKey = await getSecret();
         const client = new OpenAI({ apiKey });
-        const max_output_tokens = max_tokens || 800
+        const max_output_tokens = max_tokens || 1024
 
         const response = await client.responses.create({
-            model: max_output_tokens > 800 ? 'gpt-4.1' : 'gpt-5.2',
+            model: max_output_tokens > 1024 ? 'gpt-4.1' : 'gpt-5.2',
             input: prompt,
             max_output_tokens,
         });
