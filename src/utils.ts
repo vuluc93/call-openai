@@ -67,7 +67,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
     }
 }
 
-function extractJson(input: string): string {
+export function extractJson(input: string): string {
     const startIndex = input.indexOf('JSON_START') + 'JSON_START'.length;
     if (startIndex === -1) return '{}';
 

@@ -121,7 +121,7 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
 
       Chỉ trả về JSON, không thêm lời giải thích khác.
   `, async (jsonString) => {
-    const parsed = extractJson(jsonString);
+    const parsed = JSON.parse(extractJson(jsonString));
     const newCode = parsed.fixed_code;
 
     const startChar = selection.start.character;
