@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
+// import * as os from 'os';
 import OpenAI from "openai";
 import { getSecret } from './secretManager';
 

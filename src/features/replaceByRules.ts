@@ -1,12 +1,15 @@
 import * as vscode from 'vscode';
 import * as fs from 'node:fs';
+import os from "os";
 // import * as path from 'node:path';
 
 export async function replaceByRules() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) { return; }
 
-  const configPath = String.raw`C:\Users\LucVH\ProcessFiles\replaceRules.json`;
+  
+  // const configPath = String.raw`C:\Users\${os.userInfo().username}\ProcessFiles\replaceRules.json`;
+  const configPath = `C:\\Users\\${os.userInfo().username}\\ProcessFiles\\replaceRules.json`;
   const output = vscode.window.createOutputChannel("ReplaceByRules");
   output.clear();
   output.appendLine(`ConfigPath:  ${configPath}`);
