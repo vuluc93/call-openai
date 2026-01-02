@@ -17,6 +17,15 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
         status.text = `$(sync~spin) Loading… ${seconds}s`;
     }, 1000);
 
+    const config = vscode.workspace.getConfiguration("callOpenAI");
+
+    const mode = config.get<"offline" | "online">("mode");
+    const url =
+        mode === "offline"
+            ? config.get<string>("offlineUrl")
+            : config.get<string>("onlineUrl");
+    logToFile(mode || '', url || '')
+
     try {
         const apiKey = await getSecret();
         const client = new OpenAI({ apiKey });

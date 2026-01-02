@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -131,7 +131,26 @@
         "key": "ctrl+alt+k",
         "when": "editorTextFocus"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Call OpenAI",
+      "properties": {
+        "callOpenAI.mode": {
+          "type": "string",
+          "enum": ["offline", "online"],
+          "default": "online",
+          "description": "Select API mode"
+        },
+        "callOpenAI.offlineUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8000/v1/chat/completions"
+        },
+        "callOpenAI.onlineUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1/chat/completions"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
