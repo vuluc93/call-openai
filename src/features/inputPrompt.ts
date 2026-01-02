@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { fetchWithTimer } from '../utils';
+import { fetchWithTimer, extractJson } from '../utils';
 import { openTempEditor } from '../memoryFsManager';
 import { normalizeText, simpleCharReplace } from './simpleCheckReplace';
 
@@ -121,7 +121,7 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
 
       Chỉ trả về JSON, không thêm lời giải thích khác.
   `, async (jsonString) => {
-    const parsed = JSON.parse(jsonString);
+    const parsed = extractJson(jsonString);
     const newCode = parsed.fixed_code;
 
     const startChar = selection.start.character;

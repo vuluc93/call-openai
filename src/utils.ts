@@ -67,6 +67,16 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
     }
 }
 
+function extractJson(input: string): string {
+    const startIndex = input.indexOf('JSON_START') + 'JSON_START'.length;
+    if (startIndex === -1) return '{}';
+
+    const endIndex = input.indexOf('JSON_END', startIndex);
+    if (endIndex === -1) return '{}';
+
+    return input.substring(startIndex, endIndex).trim();
+}
+
 /**
  * Logs the input and response to a file.
  * The log file is named based on the current date. If the directory does not exist, it is created recursively.
