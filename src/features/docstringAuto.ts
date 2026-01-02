@@ -112,7 +112,7 @@ export async function docstringAuto() {
   }, 3200);
 }
 
-function createDocBlock(doc: string, indent: string, languageId: string): string {
+function createDocBlock(doc: string, indent: string, languageId: string) {
   if (languageId === 'typescript') {
     const docLines = doc.split("\n").map(line => line.trim());
     const content = docLines.map(l => l ? `${indent} * ${l}` : `${indent} *`).join("\n");

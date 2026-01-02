@@ -112,10 +112,12 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
       Yêu cầu sửa: ${instruction}
 
       Hãy trả về kết quả dưới dạng JSON như sau:
+      JSON_START
       {
         "fixed_code": "<code đã sửa>",
         "explanation": "<giải thích ngắn gọn hoặc để trống>"
       }
+      JSON_END
 
       Chỉ trả về JSON, không thêm lời giải thích khác.
   `, async (jsonString) => {
