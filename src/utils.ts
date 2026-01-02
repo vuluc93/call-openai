@@ -18,24 +18,13 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
         status.text = `$(sync~spin) Loading… ${seconds}s`;
     }, 1000);
 
-    
     try {
         const mode = config.get<"offline" | "online">("mode") || 'online';
-
-        // const apiKey = await getSecret();
-        // const client = new OpenAI({ apiKey });
         const max_output_tokens = max_tokens || 1024
-
-        // const response = await client.responses.create({
-        //     model: max_output_tokens > 1024 ? 'gpt-4.1' : 'gpt-5.2',
-        //     input: prompt,
-        //     max_output_tokens,
-        // });
-        const model = mode == 'offline' ? 'local-llama' :  max_output_tokens > 1024 ? 'gpt-4.1' : 'gpt-5.2'
+        const model = mode === 'offline' ? 'local-llama' :  max_output_tokens > 1024 ? 'gpt-4.1' : 'gpt-5.2'
         const response = await getResponse(model, prompt, max_tokens)
         logToFile(model, prompt, response);
         await fn(response);
-        // return result;
     } catch (err: any) {
         console.error('OpenAI call failed:', err);
         vscode.window.showErrorMessage(`OpenAI error: ${err.message ?? String(err)}`);
@@ -56,7 +45,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
             body: JSON.stringify({
                 model: "local-llama",
                 messages: [
-                    // { role: "system", content: "You are a coding assistant" },
+                    { role: "system", content: "You are a coding assistant" },
                     { role: "user", content: prompt }
                 ],
                 temperature: 0.2,
