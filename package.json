@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -135,11 +135,11 @@
     "configuration": {
       "title": "Call OpenAI",
       "properties": {
-        "callOpenAI.mode": {
+        "callOpenAI.model": {
           "type": "string",
-          "enum": ["offline", "online"],
-          "default": "online",
-          "description": "Select API mode"
+          "enum": ["local-llama", "gpt-4.1", "gpt-5.2"],
+          "default": "gpt-5.2",
+          "description": "Select API model"
         },
         "callOpenAI.offlineUrl": {
           "type": "string",

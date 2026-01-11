@@ -19,9 +19,7 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
     }, 1000);
 
     try {
-        const mode = config.get<"offline" | "online">("mode") || 'online';
-        const max_output_tokens = max_tokens || 1024
-        const model = mode === 'offline' ? 'local-llama' :  max_output_tokens > 1024 ? 'gpt-4.1' : 'gpt-5.2'
+        const model = config.get<string>('model') || ''
         const response = await getResponse(model, prompt, max_tokens)
         logToFile(model, prompt, response);
         await fn(response);
@@ -43,7 +41,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                model: "local-llama",
+                model,
                 messages: [
                     { role: "system", content: "You are a coding assistant" },
                     { role: "user", content: prompt }
@@ -59,7 +57,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
         const max_output_tokens = max_tokens || 1024
 
         const response = await client.responses.create({
-            model: max_output_tokens > 1024 ? 'gpt-4.1' : 'gpt-5.2',
+            model,
             input: prompt,
             max_output_tokens,
         });

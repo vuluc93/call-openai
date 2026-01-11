@@ -81,7 +81,7 @@ async function handleAnswer(input: string, source?: string) {
       Câu hỏi: `;
   }
   
-  const prompt = `${rules}${question}?`;
+  const prompt = `${rules}${question}`;
   const output = vscode.window.createOutputChannel("ShortAnswer");
   output.clear();
   output.appendLine(`[__________question__________]`);
