@@ -66,13 +66,17 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
 }
 
 export function extractJson(input: string): string {
-    const startIndex = input.indexOf('JSON_START') + 'JSON_START'.length;
-    if (startIndex === -1) return '{}';
+    const customTagMatch = input.match(/JSON_START([\s\S]*?)JSON_END/);
+    if (customTagMatch) {
+        return customTagMatch[1].trim();
+    }
 
-    const endIndex = input.indexOf('JSON_END', startIndex);
-    if (endIndex === -1) return '{}';
+    const markdownMatch = input.match(/```json\s*([\s\S]*?)\s*```/i);
+    if (markdownMatch) {
+        return markdownMatch[1].trim();
+    }
 
-    return input.substring(startIndex, endIndex).trim();
+    return input.trim();
 }
 
 /**

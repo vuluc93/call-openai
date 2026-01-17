@@ -3,7 +3,7 @@ import {
   extractListFunctions,
   findFunctionBlockByName,
 } from './listFunctions';
-import { fetchWithTimer } from '../utils';
+import { fetchWithTimer, extractJson } from '../utils';
 
 export async function docstringAuto() {
   const editor = vscode.window.activeTextEditor;
@@ -82,8 +82,9 @@ export async function docstringAuto() {
     output.appendLine(`[__________Response__________]`);
     output.show(true);
 
-    let cleanResponse = response.trim();
-    const parsed = JSON.parse(cleanResponse);
+    // let cleanResponse = response.trim();
+    const parsed = JSON.parse(extractJson(response))
+    // const parsed = JSON.parse(cleanResponse);
 
     for (const key in parsed) {
       const docstring = parsed[key];
