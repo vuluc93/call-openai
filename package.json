@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -68,6 +68,10 @@
       {
         "command": "extension.docstringAuto",
         "title": "Docstring Auto"
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "title": "Jump to keyword"
       }
     ],
     "keybindings": [
@@ -130,6 +134,51 @@
         "command": "extension.simpleCheckReplace",
         "key": "ctrl+alt+k",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "key": "ctrl+alt+1",
+        "args": 1
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "key": "ctrl+alt+2",
+        "args": 2
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "key": "ctrl+alt+3",
+        "args": 3
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "key": "ctrl+alt+4",
+        "args": 4
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "key": "ctrl+alt+5",
+        "args": 5
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "key": "ctrl+alt+6",
+        "args": 6
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "key": "ctrl+alt+7",
+        "args": 7
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "key": "ctrl+alt+8",
+        "args": 8
+      },
+      {
+        "command": "extension.jumpToKeyword",
+        "key": "ctrl+alt+9",
+        "args": 9
       }
     ],
     "configuration": {

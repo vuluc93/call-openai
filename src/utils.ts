@@ -54,7 +54,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
     } else {
         const apiKey = await getSecret();
         const client = new OpenAI({ apiKey });
-        const max_output_tokens = max_tokens || 1024
+        const max_output_tokens = max_tokens || 4096
 
         const response = await client.responses.create({
             model,

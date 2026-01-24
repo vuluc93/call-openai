@@ -110,7 +110,7 @@ export async function docstringAuto() {
         });
       }
     }
-  }, 3200);
+  }, 4096);
 }
 
 function createDocBlock(doc: string, indent: string, languageId: string) {

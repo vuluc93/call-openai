@@ -9,6 +9,7 @@ import { replaceLimited } from './features/replaceLimited';
 import { simpleCheckReplace } from './features/simpleCheckReplace';
 import { docstringAuto } from './features/docstringAuto';
 import { moveFunction } from './features/moveFunction';
+import { jumpToKeyword } from './features/jumpToKeyword';
 import {
   showFunctionInfo,
   searchInFunctions,
@@ -50,6 +51,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	register(context, "extension.simpleCheckReplace", simpleCheckReplace);
  	register(context, "extension.docstringAuto", docstringAuto);
   	register(context, "extension.moveFunction", moveFunction);
+    register(context, "extension.jumpToKeyword", (slot: number) => {
+		jumpToKeyword(slot);
+	});
 }
 
 export function deactivate() {}
@@ -61,8 +65,10 @@ export function deactivate() {}
  * @param cmd - The command identifier (string).
  * @param fn - The callback function to execute when the command is invoked.
  */
-function register(ctx: vscode.ExtensionContext,
+function register(
+	ctx: vscode.ExtensionContext,
     cmd: string,
-    fn: (...args: unknown[]) => unknown) {
+    fn: (arg?: any) => unknown
+) {
     ctx.subscriptions.push(vscode.commands.registerCommand(cmd, fn));
 }
