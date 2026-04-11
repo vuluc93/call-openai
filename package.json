@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.7.7",
+  "version": "0.8.0",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -186,7 +186,12 @@
       "properties": {
         "callOpenAI.model": {
           "type": "string",
-          "enum": ["local-llama", "gpt-4.1", "gpt-5.2"],
+          "enum": [
+            "local-llama",
+            "gpt-4.1",
+            "gpt-5.2",
+            "gemini-1.5-flash"
+          ],
           "default": "gpt-5.2",
           "description": "Select API model"
         },
@@ -221,6 +226,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "dotenv": "^17.2.3",
     "openai": "^6.9.0"
   }

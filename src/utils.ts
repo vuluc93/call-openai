@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 // import * as os from 'os';
 import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getSecret } from './secretManager';
 const config = vscode.workspace.getConfiguration("callOpenAI");
 
@@ -51,6 +52,18 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
         });
         const data = (await res.json()) as any
         return data.choices?.[0]?.message?.content ?? '{}'
+    } else if (model.startsWith('gemini-')) {
+        const apiKey = await getSecret();
+        const genAI = new GoogleGenerativeAI(apiKey || '');
+        const modelInstance = genAI.getGenerativeModel({ 
+            model: model || "gemini-1.5-flash",
+            generationConfig: {
+                maxOutputTokens: max_tokens || 4096,
+            }
+        });
+
+        const result = await modelInstance.generateContent(prompt);
+        return result.response.text() || '{}';
     } else {
         const apiKey = await getSecret();
         const client = new OpenAI({ apiKey });
