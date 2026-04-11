@@ -52,7 +52,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
         });
         const data = (await res.json()) as any
         return data.choices?.[0]?.message?.content ?? '{}'
-    } else if (model.startsWith('gemini-')) {
+    } else if (model.startsWith('models/gemini-')) {
         const apiKey = await getSecret();
         const genAI = new GoogleGenerativeAI(apiKey || '');
         const modelInstance = genAI.getGenerativeModel({ 

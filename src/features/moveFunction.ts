@@ -35,6 +35,12 @@ export async function moveFunction() {
   }
 }
 
+/**
+ * Navigates the active VS Code text editor to a specified line and centers it in the view.
+ *
+ * @param {number} line - The zero-based line number to navigate to.
+ * @returns {void}
+ */
 function goToLine(line: number) {
   const editor = vscode.window.activeTextEditor;
   if (!editor) { return; }

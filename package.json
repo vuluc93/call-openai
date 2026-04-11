@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -190,7 +190,7 @@
             "local-llama",
             "gpt-4.1",
             "gpt-5.2",
-            "gemini-1.5-flash"
+            "models/gemini-flash-latest"
           ],
           "default": "gpt-5.2",
           "description": "Select API model"
