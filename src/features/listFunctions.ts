@@ -219,6 +219,51 @@ function extractTSFunctions(content: string): FunctionInfo[] {
   return functions;
 }
 
+function extractOtherLangeFunctions(content: string): FunctionInfo[] {
+  const lines = content.split("\n");
+  const functions: FunctionInfo[] = [];
+  const defRegex = /-{9}(.*?)-{9}/;
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const match = line.match(defRegex);
+    if (!match) {
+      i++;
+      continue;
+    }
+
+    let start = i;
+    let j = i + 1;
+
+    while (
+      j < lines.length &&
+      lines[j].trim() === ""
+    ) {
+      j++;
+    }
+
+    const end = j - 1;
+
+    functions.push({
+      name: line,
+      code: '',
+      content: '',
+      start,
+      end: end,
+      indent: '',
+      docStart: start,
+      docEnd: end,
+      blockStart: start,
+      blockEnd: end,
+    });
+
+    i = end + 1;
+  }
+
+  return functions;
+}
+
 export function extractListFunctions(content: string): FunctionInfo[] {
   const editor = vscode.window.activeTextEditor;
     if (editor) {
@@ -228,7 +273,7 @@ export function extractListFunctions(content: string): FunctionInfo[] {
       return extractPyFunctions(content);
     }
   }
-  return []
+  return extractOtherLangeFunctions(content)
 }
 
 let jumpLines: number[] = [];

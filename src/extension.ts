@@ -10,8 +10,14 @@ import { simpleCheckReplace } from './features/simpleCheckReplace';
 import { docstringAuto } from './features/docstringAuto';
 import { moveFunction } from './features/moveFunction';
 import { jumpToKeyword } from './features/jumpToKeyword';
+import { 
+	startScrollTracking,
+	stopScrollTracking,
+	goToLine
+} from './features/scrollTracking';
+import { bottomProvider, sideProvider } from './previewProvider';
 import {
-  showFunctionInfo,
+//   showFunctionInfo,
   searchInFunctions,
   jumpNextLine,
 } from './features/listFunctions';
@@ -42,7 +48,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	register(context, "extension.replaceByRules", replaceByRules);
  	register(context, "extension.inputBox", inputBox);
   	register(context, "extension.inputMutilLines", inputMutilLines);
-   	register(context, "extension.listFunction", showFunctionInfo);
+   	register(context, "extension.listFunction", goToLine);
     register(context, "extension.searchInFunctions", searchInFunctions);
     register(context, "extension.jumpNextLine", jumpNextLine);
 	register(context, "extension.insertLoggerDebug", insertLoggerDebug);
@@ -51,9 +57,24 @@ export async function activate(context: vscode.ExtensionContext) {
 	register(context, "extension.simpleCheckReplace", simpleCheckReplace);
  	register(context, "extension.docstringAuto", docstringAuto);
   	register(context, "extension.moveFunction", moveFunction);
+	register(context, "extension.startScrollTracking", startScrollTracking);
+	register(context, "extension.stopScrollTracking", stopScrollTracking);
     register(context, "extension.jumpToKeyword", (slot: number) => {
 		jumpToKeyword(slot);
 	});
+
+	// const previewProvider = new PreviewProvider();
+    // context.subscriptions.push(
+    //     vscode.window.registerWebviewViewProvider('vscodeG502Preview', previewProvider)
+    // );
+
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider('vscodeG502Preview', bottomProvider)
+	);
+
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider('vscodeG502Side', sideProvider)
+	);
 }
 
 export function deactivate() {}

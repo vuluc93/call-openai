@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -72,6 +72,14 @@
       {
         "command": "extension.jumpToKeyword",
         "title": "Jump to keyword"
+      },
+      {
+        "command": "extension.startScrollTracking",
+        "title": "Start scroll tracking"
+      },
+      {
+        "command": "extension.stopScrollTracking",
+        "title": "Stop scroll tracking"
       }
     ],
     "keybindings": [
@@ -204,6 +212,34 @@
           "default": "https://api.openai.com/v1/chat/completions"
         }
       }
+    },
+    "viewsContainers": {
+      "panel": [
+        { "id": "g502-bottom", "title": "Log", "icon": "$(output)" }
+      ],
+      "activitybar": [
+        { "id": "g502-sidebar", "title": "Insights", "icon": "$(output)" }
+      ]
+    },
+    "views": {
+      "g502-bottom": [
+        {
+          "type": "webview",
+          "id": "vscodeG502Preview",
+          "name": "Bottom Monitor",
+          "icon": "$(mouse)",
+          "when": "true"
+        }
+      ],
+      "g502-sidebar": [
+        {
+          "type": "webview",
+          "id": "vscodeG502Side",
+          "name": "Right Preview",
+          "icon": "$(mouse)",
+          "when": "true"
+        }
+      ]
     }
   },
   "scripts": {
