@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { goToLine } from './features/scrollTracking';
-// import { extractListFunctions } from './features/listFunctions';
 
 class PreviewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
@@ -14,7 +13,7 @@ class PreviewProvider implements vscode.WebviewViewProvider {
                 goToLine(data.line);
             } else if (data.command === 'copyText') {
                 vscode.env.clipboard.writeText(data.text);
-                vscode.window.setStatusBarMessage('Copied to clipboard!', 2000);
+                vscode.window.showInformationMessage('Copied to clipboard!');
             }
         });
 
@@ -98,34 +97,6 @@ class PreviewProvider implements vscode.WebviewViewProvider {
             </body>
             </html>`;
     }
-
-    // private goToLine(targetLine: number) {
-    // var safeText = func.replace(/'/g, "\\'");
-                    // var html = '<span class="ln" onclick="copyLine(' + "'" + safeText + "'" + ')">' + line + '</span>' +
-                    //             '<span class="line-item" onclick="jumpToLine(' + line + ')" style="cursor:pointer">' +
-                    //                 + func +
-                    //             '</span>';
-                    // document.getElementById('header').innerHTML = html;
-    // <!-- document.getElementById('header').innerText = line + ': ' + func; -->
-    //     const editor = vscode.window.activeTextEditor;
-    //     if (editor) {
-    //         const pos = new vscode.Position(targetLine, 0);
-
-    //         // Di chuyển màn hình code đến dòng mục tiêu
-    //         editor.revealRange(
-    //             new vscode.Range(pos, pos),
-    //             vscode.TextEditorRevealType.InCenter
-    //         );
-
-    //         // Đặt con trỏ chuột tại đó
-    //         editor.selection = new vscode.Selection(pos, pos);
-
-    //         // Focus lại vào cửa sổ code chính
-    //         vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
-    //         const listFuncs = extractListFunctions(editor.document.getText());
-    //         updateSideInfo(listFuncs, targetLine)
-    //     }
-    // }
 }
 
 export const sideProvider = new PreviewProvider();
