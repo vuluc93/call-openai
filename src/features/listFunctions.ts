@@ -26,14 +26,14 @@ function extractPyFunctions(content: string): FunctionInfo[] {
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
-    const match = line.match(defRegex);
+    const match = line.match(defRegex) || line.match(COMMENT_REGEX);
     if (!match) {
       i++;
       continue;
     }
 
     const indent = match[1];
-    const name = match[2];
+    const name = match[2] ?? line;
 
     let docStart = -1;
     let docEnd = -1;
