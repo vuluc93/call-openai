@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 
+const COMMENT_REGEX = /^(?:\s*(?:\/\/|;)\s*)?-{9,}\s*([^\-]+?)\s*-{9,}/
+
 export interface FunctionInfo {
   name: string;
   code: string;
@@ -92,14 +94,14 @@ function extractTSFunctions(content: string): FunctionInfo[] {
 
   while (i < lines.length) {
     const line = lines[i];
-    const match = line.match(fnHeaderRegex);
+    const match = line.match(fnHeaderRegex) || line.match(COMMENT_REGEX);
     if (!match) {
       i++;
       continue;
     }
 
     const indent = match[1];
-    const name = match[4];
+    const name = match[4] ?? line;
     const fnStart = i;
 
     // =====================================
@@ -222,12 +224,11 @@ function extractTSFunctions(content: string): FunctionInfo[] {
 function extractOtherLangeFunctions(content: string): FunctionInfo[] {
   const lines = content.split("\n");
   const functions: FunctionInfo[] = [];
-  const defRegex = /-{9}(.*?)-{9}/;
 
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
-    const match = line.match(defRegex);
+    const match = line.match(COMMENT_REGEX);
     if (!match) {
       i++;
       continue;
