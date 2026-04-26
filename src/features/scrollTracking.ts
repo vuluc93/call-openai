@@ -33,7 +33,7 @@ function updateBottomInfo(listFuncs: FunctionInfo[], targetLine: number) {
     bottomProvider.update(curFunc?.start || 0, curFunc?.name || 'Global', contextLines)
 }
 
-export function updateSideInfo(listFuncs: FunctionInfo[], targetLine: number) {
+export function updateSideInfo(listFuncs: FunctionInfo[], targetLine: number, isContinuousCall: boolean) {
     const editor = vscode.window.activeTextEditor;
         if (!editor) return {};
 
@@ -58,8 +58,13 @@ export function updateSideInfo(listFuncs: FunctionInfo[], targetLine: number) {
         index++;
     }
 
-    sideProvider.update(targetLine + 1, editor.document.lineAt(targetLine).text, contextLines)
+    if (isContinuousCall) {
+        sideProvider.update(targetLine + 1, curFuncName, contextLines)
+    } else {
+        sideProvider.update(targetLine + 1, editor.document.lineAt(targetLine).text, contextLines)
+    }
 }
+
 
 export function startScrollTracking() {
     if (watcher) return;
@@ -84,7 +89,7 @@ export function startScrollTracking() {
                     );
 
                     updateBottomInfo(listFuncs, targetLine)
-                    updateSideInfo(listFuncs, targetLine)
+                    updateSideInfo(listFuncs, targetLine, true)
                 }
             } catch (e) {
                 // Xử lý khi file bị lock tạm thời
@@ -114,7 +119,7 @@ export function goToLine(targetLine?: number) {
         editor.selection = new vscode.Selection(pos, pos);
         vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
         const listFuncs = extractListFunctions(editor.document.getText());
-        updateSideInfo(listFuncs, line)
+        updateSideInfo(listFuncs, line, false)
     }
 }
 
