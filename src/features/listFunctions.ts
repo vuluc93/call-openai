@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-const COMMENT_REGEX = /^(?:\s*(?:\/\/|;)\s*)?-{9,}\s*([^\-]+?)\s*-{9,}/
+const COMMENT_REGEX = /-{9,}\s*(.*?)\s*-{9,}/
 
 export interface FunctionInfo {
   name: string;

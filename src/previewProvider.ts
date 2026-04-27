@@ -3,6 +3,7 @@ import { goToLine } from './features/scrollTracking';
 
 class PreviewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
+    public visibleLines?: number;
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         this._view = webviewView;
@@ -14,6 +15,9 @@ class PreviewProvider implements vscode.WebviewViewProvider {
             } else if (data.command === 'copyText') {
                 vscode.env.clipboard.writeText(data.text);
                 vscode.window.showInformationMessage('Copied to clipboard!');
+            } else if (data.command === 'onResize') {
+                this.visibleLines = Math.max(3, data.visibleLines - 2);
+                vscode.window.showInformationMessage('visibleLines: ' + this.visibleLines);
             }
         });
 
@@ -78,6 +82,18 @@ class PreviewProvider implements vscode.WebviewViewProvider {
                     if (!text) return "";
                     return text.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 }
+
+                const resizeObserver = new ResizeObserver(entries => {
+                    const height = window.innerHeight;
+                    const estimatedLines = Math.floor(height / 33);
+                    
+                    vscode.postMessage({
+                        command: 'onResize',
+                        visibleLines: estimatedLines
+                    });
+                });
+
+                resizeObserver.observe(document.body);
             </script>`;
 
         return `

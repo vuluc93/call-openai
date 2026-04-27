@@ -6,7 +6,6 @@ import { extractListFunctions, FunctionInfo } from './listFunctions';
 
 let watcher: fs.FSWatcher | null = null;
 let targetLine: number
-const CONTEXT_RANGE = 3;
 const tmpFilePath = `C:\\Users\\${os.userInfo().username}\\AppData\\Local\\Temp\\vscode_scroll.tmp`;
 
 function updateBottomInfo(listFuncs: FunctionInfo[], targetLine: number) {
@@ -16,10 +15,10 @@ function updateBottomInfo(listFuncs: FunctionInfo[], targetLine: number) {
     const document = editor.document;
     const totalLines = document.lineCount;
 
+    const contextRange = bottomProvider.visibleLines || 1
+    const startLine = Math.max(0, targetLine - (contextRange));
+    const endLine = Math.min(totalLines - 1, targetLine + (contextRange));
 
-    const startLine = Math.max(0, targetLine - CONTEXT_RANGE);
-    const endLine = Math.min(totalLines - 1, targetLine + CONTEXT_RANGE);
-    
     const contextLines = [];
     for (let i = startLine; i <= endLine; i++) {
         contextLines.push({
@@ -46,7 +45,7 @@ export function updateSideInfo(listFuncs: FunctionInfo[], targetLine: number, is
 
     let index = 1;
     for (const func of listFuncs) {
-        const match = func.name.match(/-+\s*(.*?)\s*-+/)
+        const match = func.name.match(/-{9,}\s*(.*?)\s*-{9,}/)
         const displayName = match ? match[1].trim() : func.name;
     
         contextLines.push({
