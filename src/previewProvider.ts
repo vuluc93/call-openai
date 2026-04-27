@@ -17,7 +17,8 @@ class PreviewProvider implements vscode.WebviewViewProvider {
                 vscode.window.showInformationMessage('Copied to clipboard!');
             } else if (data.command === 'onResize') {
                 this.visibleLines = Math.max(3, data.visibleLines - 2);
-                vscode.window.showInformationMessage('visibleLines: ' + this.visibleLines);
+                if (this.visibleLines < 12)
+                    vscode.window.setStatusBarMessage('visibleLines: ' + this.visibleLines, 2000);
             }
         });
 
@@ -86,7 +87,7 @@ class PreviewProvider implements vscode.WebviewViewProvider {
                 const resizeObserver = new ResizeObserver(entries => {
                     const height = window.innerHeight;
                     const estimatedLines = Math.floor(height / 33);
-                    
+
                     vscode.postMessage({
                         command: 'onResize',
                         visibleLines: estimatedLines

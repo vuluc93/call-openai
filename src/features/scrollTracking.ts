@@ -121,4 +121,3 @@ export function goToLine(targetLine?: number) {
         updateSideInfo(listFuncs, line, false)
     }
 }
-
