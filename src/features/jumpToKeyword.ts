@@ -6,7 +6,7 @@ let lastMatchIndex = -1;
 
 export function jumpToKeyword(index: number): void {
     const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
+    if (!editor) {return;}
 
     const configPath = `C:\\Users\\${os.userInfo().username}\\ProcessFiles\\keyword.json`;
     const output = vscode.window.createOutputChannel("JumpToKeyword");
@@ -14,7 +14,7 @@ export function jumpToKeyword(index: number): void {
     output.appendLine(`ConfigPath:  ${configPath}`);
     const raw = fs.readFileSync(configPath, 'utf-8');
     const dictWords: Record<number, string> = JSON.parse(raw);
-    const keyword = dictWords[index]
+    const keyword = dictWords[index];
 
     const doc = editor.document;
     const text = doc.getText();
@@ -29,7 +29,7 @@ export function jumpToKeyword(index: number): void {
         }
     });
 
-    if (matches.length === 0) return;
+    if (matches.length === 0) {return;}
 
     lastMatchIndex = (lastMatchIndex + 1) % matches.length;
     const pos = matches[lastMatchIndex];
