@@ -18,7 +18,7 @@ class PreviewProvider implements vscode.WebviewViewProvider {
             } else if (data.command === 'onResize') {
                 this.visibleLines = Math.max(3, data.visibleLines - 2);
                 if (this.visibleLines < 12)
-                    vscode.window.setStatusBarMessage('visibleLines: ' + this.visibleLines, 2000);
+                    {vscode.window.setStatusBarMessage('visibleLines: ' + this.visibleLines, 2000);}
             }
         });
 
@@ -32,7 +32,7 @@ class PreviewProvider implements vscode.WebviewViewProvider {
             number: number; text: string; isTarget: boolean; linkNumber?: number;
         }[]) {
         if (this._view) {
-            this._view.show?.(true)
+            this._view.show?.(true);
             this._view.webview.postMessage({ line, func, content });
         }
     }
@@ -105,7 +105,7 @@ class PreviewProvider implements vscode.WebviewViewProvider {
                 .line-item { display: flex; white-space: pre; }
                 .ln { background: transparent; color: var(--vscode-editorLineNumber-foreground); min-width: 40px; text-align: center; }
                 .ln:hover { background: #fff9c4; }
-                .hl { background: var(--vscode-editor-lineHighlightBackground); color: var(--vscode-editor-foreground); font-weight: bold; }
+                .hl { background: var(--vscode-editor-lineHighlightBackground); color: var(--vscode-editorLineNumber-foreground); }
             </style>
             <body>
                 <div id="header" class="line">--</div>

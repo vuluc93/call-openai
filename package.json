@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -215,10 +215,18 @@
     },
     "viewsContainers": {
       "panel": [
-        { "id": "g502-bottom", "title": "Log", "icon": "$(output)" }
+        {
+          "id": "g502-bottom",
+          "title": "Log",
+          "icon": "$(output)"
+        }
       ],
       "activitybar": [
-        { "id": "g502-sidebar", "title": "Insights", "icon": "$(output)" }
+        {
+          "id": "g502-sidebar",
+          "title": "Insights",
+          "icon": "$(output)"
+        }
       ]
     },
     "views": {
