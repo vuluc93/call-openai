@@ -47,6 +47,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
                     { role: "system", content: "You are a coding assistant" },
                     { role: "user", content: prompt }
                 ],
+                reasoning_format: "none",
                 temperature: 0.2,
             }),
         });

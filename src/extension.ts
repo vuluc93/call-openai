@@ -10,6 +10,7 @@ import { simpleCheckReplace } from './features/simpleCheckReplace';
 import { docstringAuto } from './features/docstringAuto';
 import { moveFunction } from './features/moveFunction';
 import { jumpToKeyword } from './features/jumpToKeyword';
+import { reverseLines } from './features/reverseLines';
 import { 
 	startScrollTracking,
 	stopScrollTracking,
@@ -57,6 +58,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	register(context, "extension.simpleCheckReplace", simpleCheckReplace);
  	register(context, "extension.docstringAuto", docstringAuto);
   	register(context, "extension.moveFunction", moveFunction);
+   	register(context, "extension.reverseLines", reverseLines);
 	register(context, "extension.startScrollTracking", startScrollTracking);
 	register(context, "extension.stopScrollTracking", stopScrollTracking);
     register(context, "extension.jumpToKeyword", (slot: number) => {

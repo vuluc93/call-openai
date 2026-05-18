@@ -267,10 +267,11 @@ function extractOtherLangeFunctions(content: string): FunctionInfo[] {
 
 export function extractListFunctions(content: string): FunctionInfo[] {
   const editor = vscode.window.activeTextEditor;
-    if (editor) {
-      if (editor?.document.languageId === 'typescript') {
-		  return extractTSFunctions(content);
-    } else if (editor?.document.languageId === 'python') {
+  if (editor) {
+    if (editor.document.languageId === 'typescript' || editor.document.languageId ===  'monkeyc') {
+      return extractTSFunctions(content);
+    }
+    else if (editor.document.languageId === 'python') {
       return extractPyFunctions(content);
     }
   }

@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "0.9.6",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -48,6 +48,10 @@
       {
         "command": "extension.moveFunction",
         "title": "Move function"
+      },
+      {
+        "command": "extension.reverseLines",
+        "title": "Reverse Selected lines"
       },
       {
         "command": "extension.insertLoggerDebug",
@@ -205,7 +209,7 @@
         },
         "callOpenAI.offlineUrl": {
           "type": "string",
-          "default": "http://127.0.0.1:8000/v1/chat/completions"
+          "default": "http://127.0.0.1:8080/v1/chat/completions"
         },
         "callOpenAI.onlineUrl": {
           "type": "string",
