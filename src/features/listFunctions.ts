@@ -221,6 +221,121 @@ function extractTSFunctions(content: string): FunctionInfo[] {
   return functions;
 }
 
+function extractCSFunctions(content: string): FunctionInfo[] {
+  const lines = content.split("\n");
+  const functions: FunctionInfo[] = [];
+
+  // Regex lỏng: dòng chứa (...) và KHÔNG phải là lời gọi hàm hay biểu thức thuần
+  // Yêu cầu: có ít nhất một khoảng trắng trước ( hoặc nằm ở đầu logic method-like
+  // Và có từ khóa thường thấy trong khai báo: public, private, void, string, Task, async, static, v.v.
+  // Hoặc kết thúc bằng ) và có => hoặc {
+  const potentialMethodRegex = /^\s*(?:[a-zA-Z_]\w*\s+)*[a-zA-Z_]\w*\s*\(.*\)(?:\s*=>.*;?|\s*$)/;
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i].trim();
+    if (line === "" || line.startsWith("//") || line.startsWith("#")) {
+      i++;
+      continue;
+    }
+
+    // Kiểm tra xem dòng này có "hơi giống" method header không
+    // Điều kiện: có (...) và không phải là if/while/for/switch/catch/using (những thứ cũng có (...))
+    const hasParen = line.includes('(') && line.includes(')');
+    const isControlFlow = /^(if|for|while|switch|foreach|catch|using|lock|fixed)\b/.test(line);
+
+    if (!hasParen || isControlFlow) {
+      i++;
+      continue;
+    }
+
+    // Loại bỏ các trường hợp rõ ràng không phải method: Console.WriteLine(...), new X(...), v.v.
+    // Nhưng vẫn chấp nhận rủi ro false positive — vì mục tiêu là "lấy đủ", không cần 100% chính xác
+    const looksLikeCall = /[.]\w+\s*\(/.test(line) || /^\s*new\s+\w+/.test(line);
+    if (looksLikeCall && !/^\s*(public|private|protected|internal|static|virtual|override|async|extern|sealed|readonly|partial|unsafe|\[.*\])/.test(lines[i])) {
+      i++;
+      continue;
+    }
+
+    // OK, coi như đây là đầu method
+    const fnStart = i;
+
+    // Trường hợp expression-bodied: int Foo() => 42;
+    if (line.includes("=>") && line.endsWith(";")) {
+      const nameMatch = line.match(/([a-zA-Z_]\w*)\s*\(/);
+      const name = nameMatch ? nameMatch[1] : "unknown";
+      functions.push({
+        name,
+        code: line,
+        content: line,
+        start: fnStart,
+        end: fnStart,
+        indent: lines[i].match(/^(\s*)/)?.[1] ?? '',
+        docStart: -1,
+        docEnd: -1,
+        blockStart: fnStart,
+        blockEnd: fnStart,
+      });
+      i++;
+      continue;
+    }
+
+    // Tìm dòng chứa dấu { mở
+    let j = i;
+    while (j < lines.length && !lines[j].includes("{")) {
+      j++;
+    }
+
+    if (j >= lines.length) {
+      // Không tìm thấy { → bỏ qua
+      i++;
+      continue;
+    }
+
+    // Bắt đầu đếm ngoặc
+    let braceCount = 0;
+    for (let k = j; k <= j; k++) {
+      const ln = lines[k];
+      braceCount += (ln.match(/{/g) || []).length;
+      braceCount -= (ln.match(/}/g) || []).length;
+    }
+
+    let k2 = j + 1;
+    while (k2 < lines.length && braceCount > 0) {
+      const ln = lines[k2];
+      braceCount += (ln.match(/{/g) || []).length;
+      braceCount -= (ln.match(/}/g) || []).length;
+      k2++;
+    }
+
+    const fnEnd = k2 - 1;
+    const fullCode = lines.slice(fnStart, fnEnd + 1).join("\n");
+
+    // Trích tên hàm (tạm thời)
+    const nameMatch = lines[fnStart].match(/([a-zA-Z_]\w*)\s*\(/);
+    const name = nameMatch ? nameMatch[1] : "unknown";
+
+    const indent = lines[fnStart].match(/^(\s*)/)?.[1] ?? '';
+
+    functions.push({
+      name,
+      code: fullCode,
+      content: fullCode,
+      start: fnStart,
+      end: fnEnd,
+      indent,
+      docStart: -1,
+      docEnd: -1,
+      blockStart: fnStart,
+      blockEnd: fnEnd,
+    });
+
+    i = fnEnd + 1;
+  }
+
+  return functions;
+}
+
 function extractOtherLangeFunctions(content: string): FunctionInfo[] {
   const lines = content.split("\n");
   const functions: FunctionInfo[] = [];
@@ -268,11 +383,20 @@ function extractOtherLangeFunctions(content: string): FunctionInfo[] {
 export function extractListFunctions(content: string): FunctionInfo[] {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
-    if (editor.document.languageId === 'typescript' || editor.document.languageId ===  'monkeyc') {
+    const langId = editor.document.languageId;
+    if (langId === 'typescript' || langId ===  'monkeyc') {
       return extractTSFunctions(content);
     }
     else if (editor.document.languageId === 'python') {
+      const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+      status.show();
+      status.text = `python`;
       return extractPyFunctions(content);
+    } else if (langId === 'csharp') {
+      const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+      status.show();
+      status.text = `csharp`;
+      return extractCSFunctions(content);
     }
   }
   return extractOtherLangeFunctions(content)
