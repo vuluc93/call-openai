@@ -14,7 +14,11 @@ export function insertLoggerDebug() {
     if (language === "javascript" || language === "vue" || language === "typescript") {
       // Nếu là JS/TS/Vue
       logLine = `console.log('${selectedText}', ${selectedText})`;
+    } else if (language === "c#" || language === "csharp" || language === "cs") {
+      // Nếu là C#
+      logLine = `Console.WriteLine($"${selectedText}: {${selectedText}}");`;
     } else {
+      // Nếu là Python
       const timestamp = Date.now();
       logLine = `logger.debug(f'debug_${timestamp}: {${selectedText}}')`;
     }
