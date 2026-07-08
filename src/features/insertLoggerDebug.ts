@@ -14,7 +14,7 @@ export function insertLoggerDebug() {
     if (language === "javascript" || language === "vue" || language === "typescript") {
       // Nếu là JS/TS/Vue
       logLine = `console.log('${selectedText}', ${selectedText})`;
-    } else if (language === "c#" || language === "csharp" || language === "cs") {
+    } else if (language === "csharp") {
       // Nếu là C#
       logLine = `Console.WriteLine($"${selectedText}: {${selectedText}}");`;
     } else {

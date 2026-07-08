@@ -388,14 +388,8 @@ export function extractListFunctions(content: string): FunctionInfo[] {
       return extractTSFunctions(content);
     }
     else if (editor.document.languageId === 'python') {
-      const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-      status.show();
-      status.text = `python`;
       return extractPyFunctions(content);
     } else if (langId === 'csharp') {
-      const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-      status.show();
-      status.text = `csharp`;
       return extractCSFunctions(content);
     }
   }
