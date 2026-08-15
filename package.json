@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -52,6 +52,10 @@
       {
         "command": "extension.moveFunction",
         "title": "Move function"
+      },
+      {
+        "command": "extension.fileCombiner",
+        "title": "File Combiner"
       },
       {
         "command": "extension.reverseLines",
