@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -16,6 +16,10 @@
       {
         "command": "extension.setOpenAIKey",
         "title": "Set OpenAI API Key"
+      },
+      {
+        "command": "extension.setClaudeKey",
+        "title": "Set Claude API Key"
       },
       {
         "command": "extension.callOpenai",
@@ -202,7 +206,8 @@
             "local-llama",
             "gpt-4.1",
             "gpt-5.2",
-            "models/gemini-flash-latest"
+            "models/gemini-flash-latest",
+            "claude-haiku-4-5-20251001"
           ],
           "default": "gpt-5.2",
           "description": "Select API model"
@@ -274,6 +279,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.117.1",
     "@google/generative-ai": "^0.24.1",
     "dotenv": "^17.2.3",
     "openai": "^6.9.0"

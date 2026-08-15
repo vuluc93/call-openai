@@ -19,9 +19,10 @@ export function initSecrets(secretStorage: SecretStorage): void {
  * @throws Error if the secret storage has not been initialized.
  * @return Promise<string | undefined> - A promise that resolves to the secret string if found, or undefined if the secret does not exist.
  */
-export async function getSecret(): Promise<string | undefined> {
+export async function getSecret(key?: string): Promise<string | undefined> {
   if (!secrets) {
     throw new Error('SecretStorage chưa được khởi tạo');
   }
-  return await secrets.get(SECRET_KEY_NAME);
+  const finalKey = key || SECRET_KEY_NAME;
+  return await secrets.get(finalKey);
 }

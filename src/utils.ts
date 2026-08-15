@@ -3,9 +3,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 // import * as os from 'os';
 import OpenAI from "openai";
+import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getSecret } from './secretManager';
 const config = vscode.workspace.getConfiguration("callOpenAI");
+const MAX_TOKENS = 16384
 
 export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => Promise<T>, max_tokens? : number) {
     const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
@@ -59,16 +61,32 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
         const modelInstance = genAI.getGenerativeModel({ 
             model: model || "gemini-1.5-flash",
             generationConfig: {
-                maxOutputTokens: max_tokens || 4096,
+                maxOutputTokens: max_tokens || MAX_TOKENS,
             }
         });
 
         const result = await modelInstance.generateContent(prompt);
         return result.response.text() || '{}';
+    } else if (model.startsWith('claude-')) {
+        const apiKey = await getSecret('claude.apiKey');
+        const client = new Anthropic({ apiKey });
+
+        const message = await client.messages.create({
+            model, // ví dụ: "claude-sonnet-5", "claude-opus-4-8", "claude-haiku-4-5-20251001"
+            max_tokens: max_tokens || MAX_TOKENS,
+            system: "You are a coding assistant",
+            messages: [
+                { role: "user", content: prompt }
+            ],
+            temperature: 0.2,
+        });
+
+        const textBlock = message.content.find(block => block.type === "text");
+        return textBlock?.text ?? '{}';
     } else {
         const apiKey = await getSecret();
         const client = new OpenAI({ apiKey });
-        const max_output_tokens = max_tokens || 4096
+        const max_output_tokens = max_tokens || MAX_TOKENS
 
         const response = await client.responses.create({
             model,

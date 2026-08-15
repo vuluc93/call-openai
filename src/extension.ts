@@ -44,6 +44,21 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposableSetKey);
 
+	const disposableSetKeyClaude = vscode.commands.registerCommand('extension.setClaudeKey', async () => {
+    const key = await vscode.window.showInputBox({
+			placeHolder: 'Paste your Claude API key (sk-...)',
+			ignoreFocusOut: true,
+			password: true
+		});
+		if (!key) {
+			vscode.window.showWarningMessage('No key provided.');
+			return;
+		}
+		await context.secrets.store('claude.apiKey', key);
+		vscode.window.showInformationMessage('Claude API key saved to VSCode Secret Storage.');
+	});
+	context.subscriptions.push(disposableSetKeyClaude);
+
 	initMemoryFS(context);
 
 	register(context, "extension.replaceByRules", replaceByRules);
