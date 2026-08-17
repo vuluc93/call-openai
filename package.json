@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -211,7 +211,8 @@
             "gpt-4.1",
             "gpt-5.2",
             "models/gemini-flash-latest",
-            "claude-haiku-4-5-20251001"
+            "claude-haiku-4-5-20251001",
+            "claude-opus-4-8"
           ],
           "default": "gpt-5.2",
           "description": "Select API model"
