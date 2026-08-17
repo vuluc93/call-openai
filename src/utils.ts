@@ -9,7 +9,8 @@ import { getSecret } from './secretManager';
 const config = vscode.workspace.getConfiguration("callOpenAI");
 const MAX_TOKENS = 16384
 
-export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => Promise<T>, max_tokens? : number) {
+export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => Promise<T>, 
+        max_tokens? : number, model?: string) {
     const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     status.show();
 
@@ -22,9 +23,9 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
     }, 1000);
 
     try {
-        const model = config.get<string>('model') || ''
-        const response = await getResponse(model, prompt, max_tokens)
-        logToFile(model, prompt, response);
+        const selectedModel = model || config.get<string>('model') || ''
+        const response = await getResponse(selectedModel, prompt, max_tokens)
+        logToFile(selectedModel, prompt, response);
         await fn(response);
     } catch (err: any) {
         console.error('OpenAI call failed:', err);

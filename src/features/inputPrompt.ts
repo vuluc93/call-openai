@@ -89,9 +89,9 @@ async function handleAnswer(input: string, source?: string) {
   output.show(true);
 
   await fetchWithTimer(prompt, async (jsonString) => {
-    output.appendLine(`\n[___________answer___________]`);
-    output.appendLine(`${jsonString}`);
-  }, max_tokens);
+      output.appendLine(`\n[___________answer___________]`);
+      output.appendLine(`${jsonString}`);
+    }, max_tokens, ...(count === 4 ? ['claude-opus-4-8'] : []));
 }
 
 async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
