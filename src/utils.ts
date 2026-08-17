@@ -70,6 +70,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
     } else if (model.startsWith('claude-')) {
         const apiKey = await getSecret('claude.apiKey');
         const client = new Anthropic({ apiKey });
+        const isLegacyTempSupported = !/^claude-opus-4-[7-9]/.test(model);
 
         const message = await client.messages.create({
             model, // ví dụ: "claude-sonnet-5", "claude-opus-4-8", "claude-haiku-4-5-20251001"
@@ -78,7 +79,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
             messages: [
                 { role: "user", content: prompt }
             ],
-            temperature: 0.2,
+            ...(isLegacyTempSupported ? { temperature: 0.2 } : {}),
         });
 
         const textBlock = message.content.find(block => block.type === "text");

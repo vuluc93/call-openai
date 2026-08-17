@@ -380,6 +380,12 @@ function extractOtherLangeFunctions(content: string): FunctionInfo[] {
   return functions;
 }
 
+/**
+ * Extracts function metadata from the given content based on the active editor's language.
+ *
+ * @param {string} content - The source text to analyze for function definitions.
+ * @returns {FunctionInfo[]} An array of extracted function information objects.
+ */
 export function extractListFunctions(content: string): FunctionInfo[] {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
