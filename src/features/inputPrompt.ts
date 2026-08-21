@@ -19,7 +19,7 @@ export async function inputBox() {
         if (source) {
             await fixWithOpenAI(input, selection);
         } else {
-            await handleAnswer(input);
+            await handleAnswer(input, undefined, 'local-llama');
         }
     }
 }
@@ -57,12 +57,10 @@ export async function inputMutilLines() {
   await openTempEditor(`${source}\n_____input_____\n`);
 }
 
-async function handleAnswer(input: string, source?: string) {
+async function handleAnswer(input: string, source?: string, model?: string) {
   const editor = vscode.window.activeTextEditor;
   if (!editor) { return; }
 
-//   const selection = editor.selection;
-//   const source = editor.document.getText(selection);
   const match = input.match(/^[=']+/); 
   const count = match ? match[0].length : source ? 2 : 0;
   const question = input.replace(/^[=']+/, '');
@@ -91,7 +89,7 @@ async function handleAnswer(input: string, source?: string) {
   await fetchWithTimer(prompt, async (jsonString) => {
       output.appendLine(`\n[___________answer___________]`);
       output.appendLine(`${jsonString}`);
-    }, max_tokens, ...(count === 4 ? ['claude-opus-4-8'] : []));
+    }, max_tokens, ...(model ? [model] : count === 4 ? ['claude-opus-4-8'] : []));
 }
 
 async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
