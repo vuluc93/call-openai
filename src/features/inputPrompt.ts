@@ -68,7 +68,10 @@ async function handleAnswer(input: string, source?: string, model?: string) {
 
   let rules = '';
   if (count === 0) {
-    rules = `Trả lời siêu ngắn gọn trong 1 câu.
+    rules = model === 'local-llama' ?
+      'Chỉ trả về 1 dòng code ví dụ minh họa đơn giản nhất cho câu hỏi, không giải thích' :
+      'Trả lời siêu ngắn gọn trong 1 câu'
+    rules += `.
       Câu hỏi: `;
   } else if (count === 1) {
     rules = `Hãy trả lời ngắn gọn, giải thích sơ qua nếu cần thiết, không vượt quá 100 từ.
@@ -103,22 +106,27 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
   output.appendLine(`${instruction}`);
   output.show(true);
 
-  await fetchWithTimer(`
+  const selectedModel = vscode.workspace.getConfiguration("callOpenAI").get<string>('model') || ''
+  let prompt = `
       Bạn là trợ lý sửa code ${editor?.document.languageId}.
       Dưới đây là đoạn code cần sửa, luôn giữ nguyên code gốc nhiều nhất có thể:
       ${source}
       Yêu cầu sửa: ${instruction}
+    `
+  prompt += selectedModel === 'local-llama' ? `
+    Chỉ trả về duy nhất đoạn code đã sửa. Không giải thích, không viết bất kỳ chữ nào khác.
+  ` : `
+    Hãy trả về kết quả dưới dạng JSON như sau:
+    JSON_START
+    {
+      "fixed_code": "<code đã sửa>",
+      "explanation": "<giải thích ngắn gọn hoặc để trống>"
+    }
+    JSON_END
 
-      Hãy trả về kết quả dưới dạng JSON như sau:
-      JSON_START
-      {
-        "fixed_code": "<code đã sửa>",
-        "explanation": "<giải thích ngắn gọn hoặc để trống>"
-      }
-      JSON_END
-
-      Chỉ trả về JSON, không thêm lời giải thích khác.
-  `, async (jsonString) => {
+    Chỉ trả về JSON, không thêm lời giải thích khác.
+  `
+  await fetchWithTimer(prompt, async (jsonString) => {
     const parsed = JSON.parse(extractJson(jsonString));
     const newCode = parsed.fixed_code;
 

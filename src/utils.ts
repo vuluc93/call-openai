@@ -100,7 +100,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
 }
 
 export function extractJson(input: string): string {
-    const customTagMatch = input.match(/JSON_START([\s\S]*?)JSON_END/);
+    const customTagMatch = input.match(/JSON_START([\s\S]*?)JSON_END/) || '';
     if (customTagMatch) {
         return customTagMatch[1].trim();
     }
@@ -110,7 +110,13 @@ export function extractJson(input: string): string {
         return markdownMatch[1].trim();
     }
 
-    return input.trim();
+    const markdownBlockRegex = /```(?:[a-zA-Z0-9_+-]+)?\n([\s\S]*?)\n```/;
+    const match = input.match(markdownBlockRegex);
+
+    return JSON.stringify({
+        fixed_code: match && match[1] ? match[1].trim() : input.trim(),
+        explanation: '',
+    });
 }
 
 /**
