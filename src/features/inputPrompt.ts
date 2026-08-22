@@ -17,7 +17,7 @@ export async function inputBox() {
     
     if (input) {
         if (source) {
-            await fixWithOpenAI(input, selection);
+            await fixWithOpenAI(input, selection, 'local-llama');
         } else {
             await handleAnswer(input, undefined, 'local-llama');
         }
@@ -95,7 +95,7 @@ async function handleAnswer(input: string, source?: string, model?: string) {
     }, max_tokens, ...(model ? [model] : count === 4 ? ['claude-opus-4-8'] : []));
 }
 
-async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
+async function fixWithOpenAI(instruction: string, selection: vscode.Selection, model?: string) {
   const editor = vscode.window.activeTextEditor;
   if (!editor) { return; }
 
@@ -106,14 +106,14 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
   output.appendLine(`${instruction}`);
   output.show(true);
 
-  const selectedModel = vscode.workspace.getConfiguration("callOpenAI").get<string>('model') || ''
+  // const selectedModel = vscode.workspace.getConfiguration("callOpenAI").get<string>('model') || ''
   let prompt = `
       Bạn là trợ lý sửa code ${editor?.document.languageId}.
       Dưới đây là đoạn code cần sửa, luôn giữ nguyên code gốc nhiều nhất có thể:
       ${source}
       Yêu cầu sửa: ${instruction}
     `
-  prompt += selectedModel === 'local-llama' ? `
+  prompt += model === 'local-llama' ? `
     Chỉ trả về duy nhất đoạn code đã sửa. Không giải thích, không viết bất kỳ chữ nào khác.
   ` : `
     Hãy trả về kết quả dưới dạng JSON như sau:
@@ -143,5 +143,5 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection) {
     output.appendLine(`${replaceResult.Y}`);
     output.appendLine(`\n[_________explanation_________]`);
     output.appendLine(`${parsed.explanation}`);
-  });
+  }, undefined, model);
 }
