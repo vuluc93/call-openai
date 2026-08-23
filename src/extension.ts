@@ -12,6 +12,7 @@ import { moveFunction } from './features/moveFunction';
 import { jumpToKeyword } from './features/jumpToKeyword';
 import { reverseLines } from './features/reverseLines';
 import { fileCombiner } from './features/fileCombiner';
+import { pasteFromTerminal } from './features/pasteFromTerminal';
 import { 
 	startScrollTracking,
 	stopScrollTracking,
@@ -76,6 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
   	register(context, "extension.moveFunction", moveFunction);
 	register(context, "extension.reverseLines", reverseLines);
 	register(context, "extension.fileCombiner", fileCombiner);
+ 	register(context, "extension.pasteFromTerminal", pasteFromTerminal);
 	register(context, "extension.startScrollTracking", startScrollTracking);
 	register(context, "extension.stopScrollTracking", stopScrollTracking);
     register(context, "extension.jumpToKeyword", (slot: number) => {

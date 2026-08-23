@@ -58,6 +58,10 @@
         "title": "File Combiner"
       },
       {
+        "command": "extension.pasteFromTerminal",
+        "title": "Paste From Terminal"
+      },
+      {
         "command": "extension.reverseLines",
         "title": "Reverse Selected lines"
       },
