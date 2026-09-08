@@ -143,5 +143,5 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection, m
     output.appendLine(`${replaceResult.Y}`);
     output.appendLine(`\n[_________explanation_________]`);
     output.appendLine(`${parsed.explanation}`);
-  }, undefined, model);
+  }, 4096, model);
 }
