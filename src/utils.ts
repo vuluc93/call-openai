@@ -139,7 +139,7 @@ function logToFile(model: string, input: string, response: string) {
     // const firstLineInput = input.split('\n').find(line => line.trim().length > 0);
     const logEntry = [
         `${'-'.repeat(60)}<${new Date().toISOString()}>${'-'.repeat(60)}`,
-        `[${input.substring(0, 150)}]`,
+        `[${input.substring(0, 500)}]`,
         `-----<${model}>----`,
         `${response}`,
         '\n'
