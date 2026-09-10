@@ -82,9 +82,8 @@ export async function docstringAuto() {
     output.appendLine(`[__________Response__________]`);
     output.show(true);
 
-    // let cleanResponse = response.trim();
-    const parsed = JSON.parse(extractJson(response))
-    // const parsed = JSON.parse(cleanResponse);
+    let cleanResponse = response.trim();
+    const parsed = JSON.parse(cleanResponse);
 
     for (const key in parsed) {
       const docstring = parsed[key];

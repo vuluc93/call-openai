@@ -7,7 +7,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getSecret } from './secretManager';
 const config = vscode.workspace.getConfiguration("callOpenAI");
-const MAX_TOKENS = 16384
+const MAX_TOKENS = 16384;
 
 export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => Promise<T>, 
         max_tokens? : number, model?: string) {
@@ -23,8 +23,8 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
     }, 1000);
 
     try {
-        const selectedModel = model || config.get<string>('model') || ''
-        const response = await getResponse(selectedModel, prompt, max_tokens)
+        const selectedModel = model || config.get<string>('model') || '';
+        const response = await getResponse(selectedModel, prompt, max_tokens);
         logToFile(selectedModel, prompt, response);
         await fn(response);
     } catch (err: any) {
@@ -38,7 +38,7 @@ export async function fetchWithTimer<T>(prompt: string, fn: (output: string) => 
 
 async function getResponse(model: string, prompt: string, max_tokens? : number) {
     if (model === 'local-llama') {
-        const url = config.get<string>("offlineUrl") || ''
+        const url = config.get<string>("offlineUrl") || '';
         const res = await fetch(url, {
             method: "POST",
             headers: {
@@ -56,8 +56,8 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
                 max_tokens: max_tokens ?? 255,
             }),
         });
-        const data = (await res.json()) as any
-        return data.choices?.[0]?.message?.content ?? '{}'
+        const data = (await res.json()) as any;
+        return data.choices?.[0]?.message?.content ?? '{}';
     } else if (model.startsWith('models/gemini-')) {
         const apiKey = await getSecret();
         const genAI = new GoogleGenerativeAI(apiKey || '');
@@ -90,14 +90,14 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
     } else {
         const apiKey = await getSecret();
         const client = new OpenAI({ apiKey });
-        const max_output_tokens = max_tokens || MAX_TOKENS
+        const max_output_tokens = max_tokens || MAX_TOKENS;
 
         const response = await client.responses.create({
             model,
             input: prompt,
             max_output_tokens,
         });
-        return response.output_text ?? '{}'
+        return response.output_text ?? '{}';
     }
 }
 
@@ -130,19 +130,35 @@ export function extractJson(input: string): string {
  * @param response - The response string to log (usually the application's output or response).
  */
 function logToFile(model: string, input: string, response: string) {
-    // const logDir = path.join('D:\backup\call-openai', 'logs');
     const logDir = String.raw`D:\backup\call-openai\logs`;
     if (!fs.existsSync(logDir)) {
         fs.mkdirSync(logDir, { recursive: true });
     }
-    const logPath = path.join(logDir, `log-${new Date().toISOString().slice(0,10)}.txt`);
-    // const firstLineInput = input.split('\n').find(line => line.trim().length > 0);
+
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10);
+    const timeLocal = now.toLocaleString('vi-VN', { 
+        timeZone: 'Asia/Ho_Chi_Minh',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+
+    const logPath = path.join(logDir, `log-${dateStr}.md`);
+    const safeInput = input.substring(0, 1000).replace(/^>/gm, '\\>');
+
     const logEntry = [
-        `${'-'.repeat(60)}<${new Date().toISOString()}>${'-'.repeat(60)}`,
-        `[${input.substring(0, 500)}]`,
-        `-----<${model}>----`,
-        `${response}`,
-        '\n'
-    ].join('\n');
+        `## 🕐 ${timeLocal}`,
+        '',
+        '> **📥 Input:**',
+        `> ${safeInput.replace(/\n/g, '\n> ')}`,
+        '',
+        `**🤖 Model:** \`${model}\``,
+        '',
+        '---',
+        '',
+        response,
+        '\n\n'
+    ].join('\n') + '<br/>\n';
+
     fs.appendFileSync(logPath, logEntry, 'utf8');
 }
