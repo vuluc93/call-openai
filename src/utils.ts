@@ -6,6 +6,7 @@ import OpenAI from "openai";
 import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getSecret } from './secretManager';
+import { DOCSTRING_PROMPT, TYPESCRIPT_DOCSTRING_PROMPT, PYTHON_DOCSTRING_PROMPT } from './features/docstringAuto';
 const config = vscode.workspace.getConfiguration("callOpenAI");
 const MAX_TOKENS = 16384;
 
@@ -144,7 +145,12 @@ function logToFile(model: string, input: string, response: string) {
     });
 
     const logPath = path.join(logDir, `log-${dateStr}.md`);
-    const safeInput = input.substring(0, 1000).replace(/^>/gm, '\\>');
+    const safeInput = input
+        .replace(DOCSTRING_PROMPT, '')
+        .replace(TYPESCRIPT_DOCSTRING_PROMPT, '')
+        .replace(PYTHON_DOCSTRING_PROMPT, '')
+        .replace(/^>/gm, '\\>')
+        .substring(0, 1500);
 
     const logEntry = [
         `## 🕐 ${timeLocal}`,
@@ -158,7 +164,7 @@ function logToFile(model: string, input: string, response: string) {
         '',
         response,
         '\n\n'
-    ].join('\n') + '<br/>\n';
+    ].join('\n') + '<br/>\n\n';
 
     fs.appendFileSync(logPath, logEntry, 'utf8');
 }

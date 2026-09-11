@@ -3,8 +3,42 @@ import {
   extractListFunctions,
   findFunctionBlockByName,
 } from './listFunctions';
-import { fetchWithTimer, extractJson } from '../utils';
+import { fetchWithTimer } from '../utils';
 
+export const TYPESCRIPT_DOCSTRING_PROMPT = `
+  All functions provided below are written in typescript.
+  Your task:
+  - Generate a TypeScript JSDoc docstring in English for each function.
+  - Start with a one-line summary describing the function's purpose.
+  - After the summary, insert exactly one blank line.
+  - Then output all parameters using: @param {Type} name - description
+  - Then output the return type using: @returns {Type} description
+  - Infer correct TypeScript types (number, string, boolean, GC.Spread.Sheets.Worksheet, void, Promise<void>, etc.)
+  - Only generate the docstring text (do NOT include /** */, /* */, or //).
+  - Do NOT modify the function code.
+`
+export const PYTHON_DOCSTRING_PROMPT = `
+  All functions provided below are written in python.
+  Your task:
+  - Generate a Python docstring in English for each function using Google-style format.
+  - Start with a one-line summary, then a blank line.
+  - Use:
+      Args:
+        name (type): description
+      Returns:
+        type: description
+  - Infer correct Python types (str, int, float, list[dict], date, etc.)
+  - Only generate the docstring text (do NOT include triple quotes).
+  - Do NOT modify the function code.
+`
+export const DOCSTRING_PROMPT = `Input:
+    An object where each key is an ID and the value is the function code (string, no docstring included).
+
+    Return:
+    A JSON object where each key is the same ID and each value is the generated docstring as a plain string.
+    Output valid JSON only.
+
+    Now process:`
 export async function docstringAuto() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
@@ -36,45 +70,14 @@ export async function docstringAuto() {
 
   let prompt = '';
   if (languageId === 'typescript') {
-    prompt = `
-      All functions provided below are written in typescript.
-      Your task:
-      - Generate a TypeScript JSDoc docstring in English for each function.
-      - Start with a one-line summary describing the function's purpose.
-      - After the summary, insert exactly one blank line.
-      - Then output all parameters using: @param {Type} name - description
-      - Then output the return type using: @returns {Type} description
-      - Infer correct TypeScript types (number, string, boolean, GC.Spread.Sheets.Worksheet, void, Promise<void>, etc.)
-      - Only generate the docstring text (do NOT include /** */, /* */, or //).
-      - Do NOT modify the function code.
-    `;
+    prompt = TYPESCRIPT_DOCSTRING_PROMPT;
   } else if (languageId === 'python') {
-    prompt = `
-      All functions provided below are written in python.
-      Your task:
-      - Generate a Python docstring in English for each function using Google-style format.
-      - Start with a one-line summary, then a blank line.
-      - Use:
-          Args:
-            name (type): description
-          Returns:
-            type: description
-      - Infer correct Python types (str, int, float, list[dict], date, etc.)
-      - Only generate the docstring text (do NOT include triple quotes).
-      - Do NOT modify the function code.
-    `;
+    prompt = PYTHON_DOCSTRING_PROMPT;
   }
 
   await fetchWithTimer(`${prompt}
 
-    Input:
-    An object where each key is an ID and the value is the function code (string, no docstring included).
-
-    Return:
-    A JSON object where each key is the same ID and each value is the generated docstring as a plain string.
-    Output valid JSON only.
-
-    Now process:
+    ${DOCSTRING_PROMPT}
     ${JSON.stringify(mapInput, null, 2)}
   `, async (response) => {
     const output = vscode.window.createOutputChannel("FixWithOpenAI");
@@ -109,7 +112,7 @@ export async function docstringAuto() {
         });
       }
     }
-  });
+  }, 4096);
 }
 
 function createDocBlock(doc: string, indent: string, languageId: string) {
