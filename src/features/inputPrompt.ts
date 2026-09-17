@@ -63,14 +63,20 @@ async function handleAnswer(input: string, source?: string, model?: string) {
 
   const match = input.match(/^[=']+/); 
   const count = match ? match[0].length : source ? 2 : 0;
-  const question = input.replace(/^[=']+/, '');
+  let question = input.replace(/^[=']+/, '');
+
+  const modelMatch = question.match(/\[model=([^\]]+)\]/i);
+  const forcedModel = modelMatch ? modelMatch[1].trim() : undefined;
+  question = modelMatch ? question.replace(modelMatch[0], '').trim() : question;
+  const effectiveModel = forcedModel || model;
+
   const max_tokens = 64 * 4 ** count;
 
   let rules = '';
   if (count === 0) {
-    rules = model === 'local-llama' ?
+    rules = effectiveModel === 'local-llama' ?
       'Chỉ trả về 1 dòng code ví dụ minh họa đơn giản nhất cho câu hỏi, không giải thích' :
-      'Trả lời siêu ngắn gọn trong 1 câu'
+      'Trả lời siêu ngắn gọn trong 1 câu';
     rules += `.
       Câu hỏi: `;
   } else if (count === 1) {
@@ -92,7 +98,7 @@ async function handleAnswer(input: string, source?: string, model?: string) {
   await fetchWithTimer(prompt, async (jsonString) => {
       output.appendLine(`\n[___________answer___________]`);
       output.appendLine(`${jsonString}`);
-    }, max_tokens, ...(model ? [model] : count === 4 ? ['claude-opus-4-8'] : []));
+    }, max_tokens, ...(effectiveModel ? [effectiveModel] : count === 4 ? ['claude-opus-4-8'] : []));
 }
 
 async function fixWithOpenAI(instruction: string, selection: vscode.Selection, model?: string) {
@@ -112,7 +118,7 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection, m
       Dưới đây là đoạn code cần sửa, luôn giữ nguyên code gốc nhiều nhất có thể:
       ${source}
       Yêu cầu sửa: ${instruction}
-    `
+    `;
   prompt += model === 'local-llama' ? `
     Chỉ trả về duy nhất đoạn code đã sửa. Không giải thích, không viết bất kỳ chữ nào khác.
   ` : `
@@ -125,7 +131,7 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection, m
     JSON_END
 
     Chỉ trả về JSON, không thêm lời giải thích khác.
-  `
+  `;
   await fetchWithTimer(prompt, async (jsonString) => {
     const parsed = JSON.parse(extractJson(jsonString));
     const newCode = parsed.fixed_code;
@@ -136,7 +142,7 @@ async function fixWithOpenAI(instruction: string, selection: vscode.Selection, m
       editBuilder.replace(selection, newCode.split('\n').join('\n' + indent));
     });
 
-    const replaceResult = simpleCharReplace(normalizeText(source), normalizeText(newCode), 1000)
+    const replaceResult = simpleCharReplace(normalizeText(source), normalizeText(newCode), 1000);
     output.appendLine(`\n[__________replace__________]`);
     output.appendLine(`${replaceResult.X}`);
     output.appendLine(`\n[___________with___________]`);

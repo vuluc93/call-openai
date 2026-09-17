@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-const COMMENT_REGEX = /-{9,}\s*(.*?)\s*-{9,}/
+const COMMENT_REGEX = /-{9,}\s*(.*?)\s*-{9,}/;
 
 export interface FunctionInfo {
   name: string;
@@ -89,12 +89,14 @@ function extractTSFunctions(content: string): FunctionInfo[] {
   // Nhận dạng function header
   const fnHeaderRegex =
     /^(\s*)(export\s+)?(async\s+)?function\s+(\w+)\s*\(/;
+  const testBlockRegex =
+  /^(\s*)(describe)\s*\(\s*(['"`])(.+?)\3\s*,\s*(?:async\s*)?\(\s*\)\s*=>/;
 
   let i = 0;
 
   while (i < lines.length) {
     const line = lines[i];
-    const match = line.match(fnHeaderRegex) || line.match(COMMENT_REGEX);
+    const match = line.match(fnHeaderRegex) || line.match(COMMENT_REGEX) || line.match(testBlockRegex);
     if (!match) {
       i++;
       continue;
@@ -181,11 +183,11 @@ function extractTSFunctions(content: string): FunctionInfo[] {
       (lines[j].match(/}/g) || []).length;
 
     let k2 = j + 1;
-    let subFunc = false
+    let subFunc = false;
     while (k2 < lines.length && braceCount > 0) {
       const ln = lines[k2];
       if (ln.match(fnHeaderRegex)) {
-        subFunc = true
+        subFunc = true;
         break;
       }
       braceCount += (ln.match(/{/g) || []).length;
@@ -399,7 +401,7 @@ export function extractListFunctions(content: string): FunctionInfo[] {
       return extractCSFunctions(content);
     }
   }
-  return extractOtherLangeFunctions(content)
+  return extractOtherLangeFunctions(content);
 }
 
 let jumpLines: number[] = [];
