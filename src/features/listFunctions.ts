@@ -22,11 +22,12 @@ function extractPyFunctions(content: string): FunctionInfo[] {
 
 //   const defRegex = /^(\s*)def\s+([A-Za-z0-9_]+)\s*\((.*)\):/;
   const defRegex = /^(\s*)def\s+([A-Za-z_]\w*)\s*\(([^)]*)\)\s*(?:->\s*([^:]+))?:/;
+  const classRegex = /^(\s*)class\s+([A-Za-z_]\w*)(?:\s*\(([^)]*)\))?:/;
 
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
-    const match = line.match(defRegex) || line.match(COMMENT_REGEX);
+    const match = line.match(defRegex) || line.match(COMMENT_REGEX) || line.match(classRegex);
     if (!match) {
       i++;
       continue;

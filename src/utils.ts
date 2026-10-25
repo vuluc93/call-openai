@@ -88,6 +88,22 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
 
         const textBlock = message.content.find(block => block.type === "text");
         return textBlock?.text ?? '{}';
+    } else if (model.startsWith('qwen')) {
+        const apiKey = await getSecret('qwen.apiKey');
+        const client = new OpenAI({
+            apiKey: apiKey,
+            baseURL: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1" 
+        });
+
+        const response = await client.chat.completions.create({
+            model,
+            messages: [
+                { role: "system", content: "You are a helpful assistant." },
+                { role: "user", content: prompt }
+            ],
+            max_tokens: max_tokens || MAX_TOKENS, 
+        });
+        return response.choices[0]?.message?.content ?? '{}';
     } else {
         const apiKey = await getSecret();
         const client = new OpenAI({ apiKey });

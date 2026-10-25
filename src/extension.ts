@@ -31,6 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	console.log('OpenAI example extension active');
 	initSecrets(context.secrets);
 
+	// ____________________extension.setOpenAIKey____________________
   	const disposableSetKey = vscode.commands.registerCommand('extension.setOpenAIKey', async () => {
     const key = await vscode.window.showInputBox({
 			placeHolder: 'Paste your OpenAI API key (sk-...)',
@@ -46,6 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(disposableSetKey);
 
+	// ____________________extension.setClaudeKey____________________
 	const disposableSetKeyClaude = vscode.commands.registerCommand('extension.setClaudeKey', async () => {
     const key = await vscode.window.showInputBox({
 			placeHolder: 'Paste your Claude API key (sk-...)',
@@ -60,6 +62,24 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Claude API key saved to VSCode Secret Storage.');
 	});
 	context.subscriptions.push(disposableSetKeyClaude);
+
+	// ____________________extension.setQwenKey____________________
+	const disposableSetQwenKey = vscode.commands.registerCommand('extension.setQwenKey', async () => {
+		const key = await vscode.window.showInputBox({
+			placeHolder: 'Paste your Qwen API key (sk-...)',
+			ignoreFocusOut: true,
+			password: true
+		});
+
+		if (!key) {
+			vscode.window.showWarningMessage('No key provided.');
+			return;
+		}
+
+		await context.secrets.store('qwen.apiKey', key);
+		vscode.window.showInformationMessage('Qwen API key saved to VSCode Secret Storage.');
+	});
+	context.subscriptions.push(disposableSetQwenKey);
 
 	initMemoryFS(context);
 

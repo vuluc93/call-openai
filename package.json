@@ -2,7 +2,7 @@
   "name": "call-openai",
   "displayName": "call-openai",
   "description": "VS Code extension call-openai",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -20,6 +20,10 @@
       {
         "command": "extension.setClaudeKey",
         "title": "Set Claude API Key"
+      },
+      {
+        "command": "extension.setQwenKey",
+        "title": "Set Qwen API Key"
       },
       {
         "command": "extension.callOpenai",
@@ -216,7 +220,8 @@
             "gpt-5.2",
             "models/gemini-flash-latest",
             "claude-haiku-4-5-20251001",
-            "claude-opus-4-8"
+            "claude-opus-4-8",
+            "qwen3.8-max"
           ],
           "default": "gpt-5.2",
           "description": "Select API model"
