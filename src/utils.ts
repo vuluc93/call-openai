@@ -74,7 +74,7 @@ async function getResponse(model: string, prompt: string, max_tokens? : number) 
     } else if (model.startsWith('claude-')) {
         const apiKey = await getSecret('claude.apiKey');
         const client = new Anthropic({ apiKey });
-        const isLegacyTempSupported = !/^claude-opus-4-[7-9]/.test(model);
+        const isLegacyTempSupported = !/^claude-opus-4-[7-9]/.test(model) && !/^claude-sonnet-5-5/.test(model);
 
         const message = await client.messages.create({
             model, // ví dụ: "claude-sonnet-5", "claude-opus-4-8", "claude-haiku-4-5-20251001"

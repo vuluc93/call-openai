@@ -20,7 +20,12 @@ export function insertLoggerDebug() {
     } else {
       // Nếu là Python
       const timestamp = Date.now();
-      logLine = `logger.debug(f'debug_${timestamp}: {${selectedText}}')`;
+      const relativePath = editor ? vscode.workspace.asRelativePath(editor.document.uri) : '';
+      if (relativePath.toLowerCase().includes('debug')) {
+          logLine = `print_debug(${selectedText})`;
+      } else {
+          logLine = `logger.debug(f'debug_${timestamp}: {${selectedText}}')`;
+      }
     }
 
     editor.edit(editBuilder => {
